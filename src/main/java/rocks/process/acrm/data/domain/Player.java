@@ -1,5 +1,6 @@
 package rocks.process.acrm.data.domain;
 
+import javax.persistence.Entity;
 import java.util.List;
 
 public class Player {

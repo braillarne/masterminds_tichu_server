@@ -3,11 +3,11 @@ package rocks.process.acrm.data.domain;
 import java.util.List;
 
 public class Game {
+    private Long gameId;
     private List<Player> players;
     private int currentRound;
     private int maxRound;
     private State state;
-
     public Game() {
         this.currentRound = 0;
         this.state = State.OPEN;
@@ -20,6 +20,8 @@ public class Game {
     public void removePlayer(Player player){
         this.players.remove(player);
     }
+
+    public Long getId() { return gameId; }
 
     public int getCurrentRound() {
         return currentRound;

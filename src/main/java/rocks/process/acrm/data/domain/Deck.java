@@ -5,7 +5,16 @@ import java.util.Collections;
 import java.util.Random;
 
 public class Deck {
+    private Long deckId;
     private ArrayList<Card> cards;
+
+    public Long getDeckId() {
+        return deckId;
+    }
+
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
 
     public Deck(){
         cards = new ArrayList<Card>();
