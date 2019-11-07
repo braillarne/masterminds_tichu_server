@@ -1,7 +1,11 @@
 package rocks.process.acrm.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import javax.persistence.*;
 import java.util.List;
 
+@Entity
 public class Combination {
     public Combination(List<Card> cards, CombinationType combinationType, int mainRank) {
         this.cards = cards;
@@ -12,7 +16,6 @@ public class Combination {
     public List<Card> getCards() {
         return cards;
     }
-
     public CombinationType getCombinationType() {
         return combinationType;
     }
@@ -29,7 +32,14 @@ public class Combination {
         this.secondaryRank = secondaryRank;
     }
 
+    @Id
+    @GeneratedValue
+    private Long id;
+    @OneToMany(mappedBy = "playableCombinations")
     List<Card> cards;
+    @ManyToOne
+    @JsonBackReference
+    private Player player;
     CombinationType combinationType;
     int mainRank;
     int secondaryRank;

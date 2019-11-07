@@ -7,7 +7,7 @@ import rocks.process.acrm.data.domain.Player;
 import java.util.List;
 
 @Repository
-public interface PlayerRepository extends JpaRepository<Player, Long> {
+public interface PlayerRepository extends JpaRepository<Player,Long>{
     Player findByName(String name);
     List<Player> findAll();
 }

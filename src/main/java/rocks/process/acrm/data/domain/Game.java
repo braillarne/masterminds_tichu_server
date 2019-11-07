@@ -1,9 +1,17 @@
 package rocks.process.acrm.data.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.List;
 
+@Entity
 public class Game {
+    @Id
+    @GeneratedValue
     private Long gameId;
+    @OneToMany(mappedBy = "game")
     private List<Player> players;
     private int currentRound;
     private int maxRound;

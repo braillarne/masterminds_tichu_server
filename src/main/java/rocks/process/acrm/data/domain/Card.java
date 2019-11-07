@@ -1,10 +1,33 @@
 package rocks.process.acrm.data.domain;
 
-public class Card implements Comparable<Card> {
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.annotations.ManyToAny;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
+
+@Entity
+public class Card {
+    @Id
+    @GeneratedValue
+    private Long id;
+    @NotEmpty
     private int rank;
+    @NotEmpty
     private Suit suit;
     private static final int MAX_RANK = 14;
     private static final int MIN_RANK = 2;
+    @OneToOne
+    @JsonBackReference
+    private Player player;
+    @ManyToMany
+    @JsonBackReference
+    private List<Combination> playableCombinations;
+    @ManyToOne
+    @JsonBackReference
+    private Deck deck;
 
     public Card(int rank, Suit suit) {
         this.rank = rank;
@@ -12,13 +35,13 @@ public class Card implements Comparable<Card> {
     }
 
 
-    @Override
+    /*@Override
     public int compareTo(Card i){
         if (this.rank == i.rank) return 0;
         else if (this.rank > i.rank) return 1;
         else return -1;
 
-    }
+    }*/
 
 
     @Override

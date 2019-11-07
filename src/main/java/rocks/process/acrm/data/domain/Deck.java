@@ -1,18 +1,24 @@
 package rocks.process.acrm.data.domain;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
+@Entity
 public class Deck {
+    @Id
+    @GeneratedValue
     private Long deckId;
-    private ArrayList<Card> cards;
+    @ManyToMany(mappedBy = "deck")
+    private List<Card> cards;
 
     public Long getDeckId() {
         return deckId;
     }
 
-    public ArrayList<Card> getCards() {
+    public List<Card> getCards() {
         return cards;
     }
 
