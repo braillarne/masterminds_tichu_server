@@ -30,6 +30,8 @@ public class DigiprAcrmApiApplication {
 
     @PostConstruct
     private void initDemoData() throws Exception {
+
+
         Player player = new Player();
         player.setName("Nelson");
         player.setHost(true);
