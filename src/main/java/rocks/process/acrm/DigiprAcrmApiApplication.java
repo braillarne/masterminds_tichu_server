@@ -6,9 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import rocks.process.acrm.business.service.AgentService;
 import rocks.process.acrm.business.service.CustomerService;
 import rocks.process.acrm.business.service.PlayerService;
+import rocks.process.acrm.business.service.ProfileService;
 import rocks.process.acrm.data.domain.Agent;
 import rocks.process.acrm.data.domain.Customer;
 import rocks.process.acrm.data.domain.Player;
+import rocks.process.acrm.data.domain.Profile;
 
 import javax.annotation.PostConstruct;
 
@@ -24,12 +26,21 @@ public class DigiprAcrmApiApplication {
     @Autowired
     private PlayerService playerService;
 
+    @Autowired
+    private ProfileService profileService;
+
     public static void main(String[] args) {
         SpringApplication.run(DigiprAcrmApiApplication.class, args);
     }
 
     @PostConstruct
     private void initDemoData() throws Exception {
+        Profile profile = new Profile();
+        profile.setGuest(false);
+        profile.setName("Nelson");
+        profile.setPassword("1234");
+        profile.setUsername("braillarne");
+        profileService.saveProfile(profile);
 
 
         Player player = new Player();
