@@ -26,8 +26,8 @@ public class GameBusinessService {
     public List<Combination> addPossiblePairsToPlayableCombinations(List<Card> hand) {
         List<Combination> combinationList = new ArrayList<>();
 
-        for (int i = 0; i <= hand.size(); i++) {
-            for (int j = 1; j <= hand.size(); j++) {
+        for (int i = 0; i < hand.size(); i++) {
+            for (int j = i+1; j < hand.size(); j++) {
                 if (hand.get(i).getRank() == hand.get(j).getRank()) {
                     List<Card> temp = new ArrayList<>();
                     temp.add(hand.get(i));
@@ -46,14 +46,20 @@ public class GameBusinessService {
         if (pairs.size() < 2) {
             return runningPairs;
         } else {
-            for (int i = 0; i < pairs.size(); i++) {
+            for (int i = 0; i < pairs.size()-1; i++) {
                 List<Card> temp = new ArrayList<>();
                 if (pairs.get(i).getMainRank() + 1 == pairs.get(i + 1).getMainRank()) {
                     if (!temp.contains(pairs.get(i).getCards())) {
-                        temp.addAll(pairs.get(i).getCards());
+                        for (Card c:pairs.get(i).getCards()
+                             ) {
+                            temp.add(c);
+                        }
                     }
                     if (!temp.contains(pairs.get(i + 1).getCards())) {
-                        temp.addAll(pairs.get(i + 1).getCards());
+                        for (Card c:pairs.get(i+1).getCards()
+                        ) {
+                            temp.add(c);
+                        }
                     }
 
                 }
@@ -62,7 +68,7 @@ public class GameBusinessService {
                      ) {
                     score += c.getRank();
                 }
-                Combination runningPair = new Combination(temp, CombinationType.RUNPAIR, score);
+                runningPairs.add(new Combination(temp, CombinationType.RUNPAIR, score));
             }
         }
 
