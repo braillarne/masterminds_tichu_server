@@ -39,4 +39,19 @@ public class ProfileEndpoint {
         }
         return ResponseEntity.ok(profile);
     }
+
+    @PostMapping(path = "/profile", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Profile> postProfile(@RequestBody Profile profile) throws Exception {
+        try {
+            profileService.saveProfile(profile);
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
+        }
+
+        URI location = ServletUriComponentsBuilder
+            .fromCurrentRequest().path("/{customerId}")
+            .buildAndExpand(profile.getId()).toUri();
+
+        return ResponseEntity.created(location).body(profile);
+    }
 }
