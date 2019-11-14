@@ -1,16 +1,22 @@
 package rocks.process.acrm.business.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import rocks.process.acrm.data.domain.*;
 import rocks.process.acrm.data.repository.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class GameBusinessService {
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    public List<Game> getAllGames() {
+        return gameRepository.findAll();
+    }
 
     public void savePlayer(Player player) throws Exception {
         playerRepository.save(player);
