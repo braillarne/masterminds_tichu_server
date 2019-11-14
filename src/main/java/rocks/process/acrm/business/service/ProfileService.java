@@ -13,26 +13,30 @@ public class ProfileService {
     @Autowired
     private ProfileRepository profileRepository;
 
-    public Profile findOneProfileByUsername(String username){
+    public Profile findOneProfileByUsername(String username) {
         return profileRepository.findByUsername(username);
     }
 
     public void saveProfile(Profile profile) throws Exception {
-        profileRepository.save(profile);
+        try {
+            profileRepository.save(profile);
+        } catch (Exception e){
+            throw new Exception("Invalid Profile information.");
+        }
+
     }
 
     public Profile loginWithUsernameAndPassword(String username, String password) throws Exception {
         try {
             Profile profile = findOneProfileByUsername(username);
 
-            if(profile.getPassword().equals(password)){
+            if (profile.getPassword().equals(password)) {
                 return profile;
-            }
-            else {
+            } else {
                 throw new Exception("Invalid username or password.");
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new Exception("Invalid username or password.");
         }
     }
