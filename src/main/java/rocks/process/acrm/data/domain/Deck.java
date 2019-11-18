@@ -13,6 +13,8 @@ public class Deck {
     private Long deckId;
     @ManyToMany(mappedBy = "deck")
     private List<Card> cards;
+    @OneToOne
+    private Game game;
 
     public Long getDeckId() {
         return deckId;
