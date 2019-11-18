@@ -14,9 +14,37 @@ public class GameBusinessService {
 
     @Autowired
     private PlayerRepository playerRepository;
+    @Autowired
+    private CardRepository cardRepository;
+
+    @Autowired
+    private CombinationRepository combinationRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private DeckRepository deckRepository;
+
+    @Autowired
+    private GameRepository gameRepository;
+
+    @Autowired
+    private ProfileRepository profileRepository;
+
+    @Autowired
+    private ResultRepository resultRepository;
 
     public List<Game> getAllGames() {
         return gameRepository.findAll();
+    }
+
+    public void saveGame(Game game) throws Exception {
+        try {
+            gameRepository.save(game);
+        } catch (Exception e){
+            throw new Exception("Invalid Game.");
+        }
     }
 
     public void savePlayer(Player player) throws Exception {
@@ -39,8 +67,8 @@ public class GameBusinessService {
 
     public boolean isTriple(List<Card> transmittedcards) {
         if (transmittedcards.size() == 3
-                && transmittedcards.get(0).getRank() == transmittedcards.get(1).getRank()
-                && transmittedcards.get(0).getRank() == transmittedcards.get(2).getRank()) {
+            && transmittedcards.get(0).getRank() == transmittedcards.get(1).getRank()
+            && transmittedcards.get(0).getRank() == transmittedcards.get(2).getRank()) {
             return true;
 
         } else return false;
@@ -66,8 +94,8 @@ public class GameBusinessService {
 
         //Check xxxyy
         if (transmittedCards.get(0).getRank() == transmittedCards.get(1).getRank()
-                && transmittedCards.get(1).getRank() == transmittedCards.get(2).getRank()
-                && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
+            && transmittedCards.get(1).getRank() == transmittedCards.get(2).getRank()
+            && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
 
             return true;
         }
@@ -75,8 +103,8 @@ public class GameBusinessService {
 
         //Check xxyyy
         if (transmittedCards.get(0).getRank() == transmittedCards.get(1).getRank()
-                && transmittedCards.get(2).getRank() == transmittedCards.get(3).getRank()
-                && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
+            && transmittedCards.get(2).getRank() == transmittedCards.get(3).getRank()
+            && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
 
             return true;
         }
@@ -97,7 +125,7 @@ public class GameBusinessService {
 
         }
         //n sequence elements need n-1 comparisons
-        if (counter+1 == transmittedCards.size()) return true;
+        if (counter + 1 == transmittedCards.size()) return true;
 
         return false;
     }
@@ -105,27 +133,27 @@ public class GameBusinessService {
     public boolean isBomb(List<Card> transmittedCards) {
         int counter = 0;
 
-        if(transmittedCards.size()==4){
-            for(int i = 0; i<transmittedCards.size()-1;i++){
+        if (transmittedCards.size() == 4) {
+            for (int i = 0; i < transmittedCards.size() - 1; i++) {
                 if (transmittedCards.get(i).getRank() == transmittedCards.get(i + 1).getRank()) {
                     counter++;
                 }
             }
             //n elements of a sequence need n-1 comparisons
-            if (counter+1 == transmittedCards.size()) return true;
+            if (counter + 1 == transmittedCards.size()) return true;
         }
 
-        if(transmittedCards.size()>=5){
-            for(int i = 0; i<transmittedCards.size()-1;i++) {
-            if(transmittedCards.get(i).getRank()+1==transmittedCards.get(i+1).getRank()
-            &&transmittedCards.get(i).getSuit().equals(transmittedCards.get(i+1).getSuit())){
-                counter++;
+        if (transmittedCards.size() >= 5) {
+            for (int i = 0; i < transmittedCards.size() - 1; i++) {
+                if (transmittedCards.get(i).getRank() + 1 == transmittedCards.get(i + 1).getRank()
+                    && transmittedCards.get(i).getSuit().equals(transmittedCards.get(i + 1).getSuit())) {
+                    counter++;
+                }
             }
-            }
-            if(counter+1 == transmittedCards.size()) return true;
-            }
+            if (counter + 1 == transmittedCards.size()) return true;
+        }
 
-return false;
+        return false;
     }
 
 
@@ -180,27 +208,4 @@ return false;
 
         return runningPairs;
     }
-
-    @Autowired
-    private CardRepository cardRepository;
-
-    @Autowired
-    private CombinationRepository combinationRepository;
-
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
-    private DeckRepository deckRepository;
-
-    @Autowired
-    private GameRepository gameRepository;
-
-    @Autowired
-    private ProfileRepository profileRepository;
-
-    @Autowired
-    private ResultRepository resultRepository;
-
-
 }

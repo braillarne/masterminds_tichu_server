@@ -1,5 +1,7 @@
 package rocks.process.acrm.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -14,11 +16,39 @@ public class Game {
     private int maxRound;
     private State state;
     @OneToOne
+    @JsonBackReference(value = "deck-game")
     private Deck deck;
 
-    public Game() {
-        this.currentRound = 0;
-        this.state = State.OPEN;
+    public Long getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    public int getMaxRound() {
+        return maxRound;
+    }
+
+    public void setMaxRound(int maxRound) {
+        this.maxRound = maxRound;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     public void addPlayer(Player player) {

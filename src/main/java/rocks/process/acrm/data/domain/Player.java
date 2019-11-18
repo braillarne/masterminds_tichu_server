@@ -17,6 +17,7 @@ public class Player {
     //@NotEmpty
     private boolean isHost;
     @OneToOne
+    @JsonBackReference(value = "player-team")
     private Team team;
     @ManyToMany(mappedBy = "player")
     private List<Card> hand;
@@ -24,7 +25,7 @@ public class Player {
     private List<Combination> playableCombinations;
     private boolean isPlaying;
     @OneToOne
-    @JsonBackReference
+    @JsonBackReference(value = "player-game")
     private Game game;
 
     public String getProfileID() {

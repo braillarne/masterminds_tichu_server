@@ -20,13 +20,13 @@ public class Card {
     private static final int MAX_RANK = 14;
     private static final int MIN_RANK = 2;
     @OneToOne
-    @JsonBackReference
+    @JsonBackReference(value = "card-player")
     private Player player;
     @ManyToMany
-    @JsonBackReference
+    @JsonBackReference(value = "card-combination")
     private List<Combination> playableCombinations;
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "card-deck")
     private Deck deck;
 
     public Card(int rank, Suit suit) {

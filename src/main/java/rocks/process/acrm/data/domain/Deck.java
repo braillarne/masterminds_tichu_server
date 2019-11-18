@@ -1,5 +1,7 @@
 package rocks.process.acrm.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +16,7 @@ public class Deck {
     @ManyToMany(mappedBy = "deck")
     private List<Card> cards;
     @OneToOne
+    @JsonBackReference(value = "deck-game")
     private Game game;
 
     public Long getDeckId() {
