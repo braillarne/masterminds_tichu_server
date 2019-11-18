@@ -37,7 +37,8 @@ public class DigiprAcrmApiApplication {
     private void initDemoData() throws Exception {
         Profile profile = new Profile();
         profile.setGuest(false);
-        profile.setName("Nelson");
+        profile.setFirstname("Nelson");
+        profile.setLastname("Braillard");
         profile.setPassword("1234");
         profile.setUsername("braillarne");
         profileService.saveProfile(profile);

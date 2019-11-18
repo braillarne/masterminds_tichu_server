@@ -9,7 +9,8 @@ import java.util.List;
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
     List<Profile> findAll();
-    List<Profile> findAllByName(String name);
+    List<Profile> findAllByFirstname(String firstname);
+    List<Profile> findAllByLastname(String lastname);
     Profile findProfileById(Long id);
     Profile findByUsername(String username);
 }
