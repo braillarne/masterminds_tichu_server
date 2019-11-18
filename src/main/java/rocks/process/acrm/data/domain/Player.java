@@ -16,6 +16,8 @@ public class Player {
     private String name;
     //@NotEmpty
     private boolean isHost;
+    @OneToOne
+    private Team team;
     @ManyToMany(mappedBy = "player")
     private List<Card> hand;
     @ManyToMany(mappedBy = "player")
@@ -47,6 +49,14 @@ public class Player {
 
     public boolean isHost() {
         return isHost;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     public boolean isPlaying() {
