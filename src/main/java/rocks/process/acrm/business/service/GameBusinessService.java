@@ -6,6 +6,7 @@ import rocks.process.acrm.data.domain.*;
 import rocks.process.acrm.data.repository.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -26,8 +27,50 @@ public class GameBusinessService {
     @Autowired
     private DeckRepository deckRepository;
 
+    public Deck createDeck(Game game){
+        Deck tempDeck = new Deck();
+
+        //Add Jade
+        for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
+            tempDeck.getCards().add(new Card(i, Suit.JADE));
+        }
+
+        //Add Sword
+        for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
+            tempDeck.getCards().add(new Card(i, Suit.SWORD));
+        }
+
+        //Add Pagoda
+        for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
+            tempDeck.getCards().add(new Card(i, Suit.PAGODA));
+        }
+
+        //Add Star
+        for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
+            tempDeck.getCards().add(new Card(i, Suit.STAR));
+        }
+
+        //Shuffle the deck
+        Collections.shuffle(tempDeck.getCards());
+
+        //TODO Save deck method
+
+        return tempDeck;
+
+    }
+
+
+
+
     @Autowired
     private GameRepository gameRepository;
+
+    public void createGame(String profileID, String name, Game game){
+        Game tempGame = new Game();
+        tempGame.addPlayer(createPlayer(profileID, name, game));
+        tempGame.setDeck(createDeck(game));
+
+    }
 
     @Autowired
     private ProfileRepository profileRepository;
@@ -51,12 +94,24 @@ public class GameBusinessService {
         playerRepository.save(player);
     }
 
+    public Player createPlayer(String profileID, String name, Game game ){
+        Player tempPlayer = new Player();
+
+        tempPlayer.setProfileID(profileID);
+        tempPlayer.setName(name);
+        tempPlayer.setHost(true);
+        //TODO Set player to team. Not possible yet.
+        //TODO Link player with profile
+        tempPlayer.setGame(game);
+        //TODO Command not working throwing exception: savePlayer(tempPlayer);
+        return tempPlayer;
+    }
+
     public Player findOnePlayerByName(String name) {
         return playerRepository.findByName(name);
     }
 
-    public void evaluatePlayableCombinationsFromPlayerHand(List<Card> hand) {
-    }
+
 
     public boolean isPair(List<Card> transmittedcards) {
         if (transmittedcards.size() == 2 && transmittedcards.get(0).getRank() == transmittedcards.get(1).getRank()) {

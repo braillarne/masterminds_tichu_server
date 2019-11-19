@@ -60,6 +60,10 @@ public class Player {
         this.team = team;
     }
 
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
     public boolean isPlaying() {
         return isPlaying;
     }
