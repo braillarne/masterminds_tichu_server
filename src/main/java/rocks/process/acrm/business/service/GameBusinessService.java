@@ -27,27 +27,34 @@ public class GameBusinessService {
     @Autowired
     private DeckRepository deckRepository;
 
-    public Deck createDeck(Game game){
+    public Deck createDeck(Game game) {
         Deck tempDeck = new Deck();
+
+        //TODO Save method for Cards
 
         //Add Jade
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
-            tempDeck.getCards().add(new Card(i, Suit.JADE));
+            Card tempcard = new Card(i, Suit.JADE);
+            tempDeck.getCards().add(tempcard);
         }
 
         //Add Sword
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
-            tempDeck.getCards().add(new Card(i, Suit.SWORD));
+            Card tempcard = new Card(i, Suit.SWORD);
+            tempDeck.getCards().add(tempcard);
+
         }
 
         //Add Pagoda
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
-            tempDeck.getCards().add(new Card(i, Suit.PAGODA));
+            Card tempcard = new Card(i, Suit.PAGODA);
+            tempDeck.getCards().add(tempcard);
         }
 
         //Add Star
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
-            tempDeck.getCards().add(new Card(i, Suit.STAR));
+            Card tempcard = new Card(i, Suit.STAR);
+            tempDeck.getCards().add(tempcard);
         }
 
         //Shuffle the deck
@@ -60,12 +67,10 @@ public class GameBusinessService {
     }
 
 
-
-
     @Autowired
     private GameRepository gameRepository;
 
-    public void createGame(String profileID, String name, Game game){
+    public void createGame(String profileID, String name, Game game) {
         Game tempGame = new Game();
         tempGame.addPlayer(createPlayer(profileID, name, game));
         tempGame.setDeck(createDeck(game));
@@ -85,7 +90,7 @@ public class GameBusinessService {
     public void saveGame(Game game) throws Exception {
         try {
             gameRepository.save(game);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("Invalid Game.");
         }
     }
@@ -94,7 +99,7 @@ public class GameBusinessService {
         playerRepository.save(player);
     }
 
-    public Player createPlayer(String profileID, String name, Game game ){
+    public Player createPlayer(String profileID, String name, Game game) {
         Player tempPlayer = new Player();
 
         tempPlayer.setProfileID(profileID);
@@ -112,7 +117,6 @@ public class GameBusinessService {
     }
 
 
-
     public boolean isPair(List<Card> transmittedcards) {
         if (transmittedcards.size() == 2 && transmittedcards.get(0).getRank() == transmittedcards.get(1).getRank()) {
             return true;
@@ -122,8 +126,8 @@ public class GameBusinessService {
 
     public boolean isTriple(List<Card> transmittedcards) {
         if (transmittedcards.size() == 3
-            && transmittedcards.get(0).getRank() == transmittedcards.get(1).getRank()
-            && transmittedcards.get(0).getRank() == transmittedcards.get(2).getRank()) {
+                && transmittedcards.get(0).getRank() == transmittedcards.get(1).getRank()
+                && transmittedcards.get(0).getRank() == transmittedcards.get(2).getRank()) {
             return true;
 
         } else return false;
@@ -149,8 +153,8 @@ public class GameBusinessService {
 
         //Check xxxyy
         if (transmittedCards.get(0).getRank() == transmittedCards.get(1).getRank()
-            && transmittedCards.get(1).getRank() == transmittedCards.get(2).getRank()
-            && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
+                && transmittedCards.get(1).getRank() == transmittedCards.get(2).getRank()
+                && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
 
             return true;
         }
@@ -158,8 +162,8 @@ public class GameBusinessService {
 
         //Check xxyyy
         if (transmittedCards.get(0).getRank() == transmittedCards.get(1).getRank()
-            && transmittedCards.get(2).getRank() == transmittedCards.get(3).getRank()
-            && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
+                && transmittedCards.get(2).getRank() == transmittedCards.get(3).getRank()
+                && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
 
             return true;
         }
@@ -201,7 +205,7 @@ public class GameBusinessService {
         if (transmittedCards.size() >= 5) {
             for (int i = 0; i < transmittedCards.size() - 1; i++) {
                 if (transmittedCards.get(i).getRank() + 1 == transmittedCards.get(i + 1).getRank()
-                    && transmittedCards.get(i).getSuit().equals(transmittedCards.get(i + 1).getSuit())) {
+                        && transmittedCards.get(i).getSuit().equals(transmittedCards.get(i + 1).getSuit())) {
                     counter++;
                 }
             }
