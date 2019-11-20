@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rocks.process.acrm.business.service.GameBusinessService;
-import rocks.process.acrm.business.service.PlayerService;
 import rocks.process.acrm.data.domain.Game;
-import rocks.process.acrm.data.domain.Player;
 import rocks.process.acrm.data.domain.Profile;
 
 import javax.validation.ConstraintViolationException;
@@ -35,5 +33,17 @@ public class GameEndpoint {
             .buildAndExpand(game.getId()).toUri();
 
         return ResponseEntity.created(location).body(game);
+    }
+
+    @PostMapping(path = "/game/new", consumes = "application/json", produces = "application/json")
+    public Game createNewGame(@RequestBody Profile profile) throws Exception {
+        Game newGame = null;
+        try {
+            newGame = gameBusinessService.createGame(profile.getId(),profile.getUsername());
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
+        }
+
+        return newGame;
     }
 }

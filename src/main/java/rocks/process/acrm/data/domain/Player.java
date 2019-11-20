@@ -11,7 +11,7 @@ public class Player {
     @Id
     @GeneratedValue
     private Long id;
-    private String profileID;
+    private Long profileID;
     //@NotEmpty(message = "Please provide a name.")
     private String name;
     //@NotEmpty
@@ -28,11 +28,11 @@ public class Player {
     @JsonBackReference(value = "player-game")
     private Game game;
 
-    public String getProfileID() {
+    public Long getProfileID() {
         return profileID;
     }
 
-    public void setProfileID(String profileID) {
+    public void setProfileID(Long profileID) {
         this.profileID = profileID;
     }
 

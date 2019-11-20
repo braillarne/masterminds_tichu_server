@@ -27,7 +27,7 @@ public class GameBusinessService {
     @Autowired
     private DeckRepository deckRepository;
 
-    public Deck createDeck(Game game) {
+    public Deck createDeck() {
         Deck tempDeck = new Deck();
 
         //TODO Save method for Cards
@@ -63,18 +63,22 @@ public class GameBusinessService {
         //TODO Save deck method
 
         return tempDeck;
-
     }
 
 
     @Autowired
     private GameRepository gameRepository;
 
-    public void createGame(String profileID, String name, Game game) {
-        Game tempGame = new Game();
-        tempGame.addPlayer(createPlayer(profileID, name, game));
-        tempGame.setDeck(createDeck(game));
-
+    public Game createGame(Long profileID, String name) {
+        Game tempGame = gameRepository.save(new Game());
+        Deck tempDeck = deckRepository.save(createDeck());
+        Player tempPlayer = createPlayer(profileID, name, tempGame);
+        playerRepository.save(tempPlayer);
+        List<Player> players = new ArrayList<>();
+        players.add(tempPlayer);
+        tempGame.setPlayers(players);
+        tempGame.setDeck(tempDeck);
+        return gameRepository.save(tempGame);
     }
 
     @Autowired
@@ -99,7 +103,7 @@ public class GameBusinessService {
         playerRepository.save(player);
     }
 
-    public Player createPlayer(String profileID, String name, Game game) {
+    public Player createPlayer(Long profileID, String name, Game game){
         Player tempPlayer = new Player();
 
         tempPlayer.setProfileID(profileID);
@@ -108,7 +112,6 @@ public class GameBusinessService {
         //TODO Set player to team. Not possible yet.
         //TODO Link player with profile
         tempPlayer.setGame(game);
-        //TODO Command not working throwing exception: savePlayer(tempPlayer);
         return tempPlayer;
     }
 
