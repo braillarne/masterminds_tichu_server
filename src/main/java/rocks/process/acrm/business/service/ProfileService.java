@@ -21,6 +21,7 @@ public class ProfileService {
 
             if(profile.isGuest()){
                 profile.setUsername("Guest"+profile.getId().toString());
+                profileRepository.save(profile);
             }
 
         } catch (Exception e){

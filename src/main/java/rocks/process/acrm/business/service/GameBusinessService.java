@@ -101,6 +101,17 @@ public class GameBusinessService {
         }
     }
 
+    public Game joinGame(Long profileID, Long gameID){
+        Profile profile = profileRepository.findProfileById(profileID);
+        Game game = gameRepository.findByGameId(gameID);
+        Player tempPlayer = createPlayer(profileID, profile.getUsername(), game);
+
+        List<Player> playerList = game.getPlayers();
+        playerList.add(playerRepository.save(tempPlayer));
+        game.setPlayers(playerList);
+        return gameRepository.save(game);
+    }
+
     public void savePlayer(Player player) throws Exception {
         playerRepository.save(player);
     }

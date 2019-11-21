@@ -59,10 +59,6 @@ public class Game {
         this.state = state;
     }
 
-    public void addPlayer(Player player) {
-        this.players.add(player);
-    }
-
     public void removePlayer(Player player) {
         this.players.remove(player);
     }

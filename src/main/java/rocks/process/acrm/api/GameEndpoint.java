@@ -8,6 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rocks.process.acrm.business.service.GameBusinessService;
 import rocks.process.acrm.data.domain.Game;
+import rocks.process.acrm.data.domain.JoinGameHandler;
 import rocks.process.acrm.data.domain.NewGameHandler;
 import rocks.process.acrm.data.domain.Profile;
 import springfox.documentation.spring.web.json.Json;
@@ -42,6 +43,18 @@ public class GameEndpoint {
         Game newGame = null;
         try {
             newGame = gameBusinessService.createGame(newGameHandler.getProfileID(),newGameHandler.getGameName());
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
+        }
+
+        return newGame;
+    }
+
+    @PutMapping(path = "/game/join", consumes = "application/json", produces = "application/json")
+    public Game createNewGame(@RequestBody JoinGameHandler joinGameHandler) throws Exception {
+        Game newGame = null;
+        try {
+            newGame = gameBusinessService.joinGame(joinGameHandler.getProfileID(), joinGameHandler.getGameID());
         } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
         }
