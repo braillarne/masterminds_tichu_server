@@ -55,7 +55,7 @@ public class ProfileEndpoint {
         return ResponseEntity.created(location).body(profile);
     }
 
-    @GetMapping(path = "/profile/newGuest", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/profile/newGuest", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Profile> postProfile() throws Exception {
         Profile profile = new Profile();
         profile.setGuest(true);
