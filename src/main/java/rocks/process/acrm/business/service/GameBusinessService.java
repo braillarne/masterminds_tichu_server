@@ -121,7 +121,8 @@ public class GameBusinessService {
 
         tempPlayer.setProfileID(profileID);
         tempPlayer.setName(name);
-        tempPlayer.setHost(true);
+        // Checks if there is already players involved. If not then the created player becomes the owner
+        tempPlayer.setHost(game.getPlayers()==null);
         //TODO Set player to team. Not possible yet.
         //TODO Link player with profile
         tempPlayer.setGame(game);
