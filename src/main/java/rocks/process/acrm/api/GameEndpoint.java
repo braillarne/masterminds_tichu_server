@@ -7,11 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rocks.process.acrm.business.service.GameBusinessService;
-import rocks.process.acrm.data.domain.Game;
-import rocks.process.acrm.data.domain.JoinGameHandler;
-import rocks.process.acrm.data.domain.NewGameHandler;
-import rocks.process.acrm.data.domain.Profile;
-import springfox.documentation.spring.web.json.Json;
+import rocks.process.acrm.data.domain.*;
 
 import javax.validation.ConstraintViolationException;
 import java.net.URI;
@@ -39,10 +35,10 @@ public class GameEndpoint {
     }
 
     @PostMapping(path = "/game/new", consumes = "application/json", produces = "application/json")
-    public Game createNewGame(@RequestBody NewGameHandler newGameHandler) throws Exception {
+    public Game createNewGame(@RequestBody GameHandler GameHandler) throws Exception {
         Game newGame = null;
         try {
-            newGame = gameBusinessService.createGame(newGameHandler.getProfileID(),newGameHandler.getGameName());
+            newGame = gameBusinessService.createGame(GameHandler.getProfileID(),GameHandler.getGameName());
         } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
         }
@@ -51,10 +47,22 @@ public class GameEndpoint {
     }
 
     @PutMapping(path = "/game/join", consumes = "application/json", produces = "application/json")
-    public Game createNewGame(@RequestBody JoinGameHandler joinGameHandler) throws Exception {
+    public Game joinGame(@RequestBody GameHandler GameHandler) throws Exception {
         Game newGame = null;
         try {
-            newGame = gameBusinessService.joinGame(joinGameHandler.getProfileID(), joinGameHandler.getGameID());
+            newGame = gameBusinessService.joinGame(GameHandler.getProfileID(), GameHandler.getGameID());
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
+        }
+
+        return newGame;
+    }
+
+    @PutMapping(path = "/game/state", consumes = "application/json", produces = "application/json")
+    public Game updateGameState(@RequestBody GameHandler gameHandler) throws Exception {
+        Game newGame = null;
+        try {
+            newGame = gameBusinessService.updateGameState(gameHandler);
         } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
         }

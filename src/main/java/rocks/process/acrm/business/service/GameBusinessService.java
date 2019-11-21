@@ -80,6 +80,7 @@ public class GameBusinessService {
         tempGame.setPlayers(players);
         tempGame.setDeck(tempDeck);
         tempGame.setName(name);
+        tempGame.setState(State.OPEN);
         return gameRepository.save(tempGame);
     }
 
@@ -110,6 +111,26 @@ public class GameBusinessService {
         playerList.add(playerRepository.save(tempPlayer));
         game.setPlayers(playerList);
         return gameRepository.save(game);
+    }
+
+    public Game updateGameState(GameHandler gh) throws Exception{
+        Game tempGame = gameRepository.findByGameId(gh.getGameID());
+        if(gh.getGameState().equals(State.RUNNING)){
+            try {
+                Player player = playerRepository.findOnePlayerById(gh.getPlayerID());
+                if(player.isHost()){
+                    tempGame.setState(gh.getGameState());
+                    return gameRepository.save(tempGame);
+                }else {
+                    throw new Exception("Need to be host of the game.");
+                }
+            }catch (Exception e){
+                throw new Exception("Need to be host of the game.");
+            }
+        }else {
+            tempGame.setState(gh.getGameState());
+        }
+        return gameRepository.save(tempGame);
     }
 
     public void savePlayer(Player player) throws Exception {

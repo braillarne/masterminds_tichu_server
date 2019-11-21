@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface PlayerRepository extends JpaRepository<Player,Long>{
+    Player findOnePlayerById(Long id);
     Player findByName(String name);
     List<Player> findAll();
 }
