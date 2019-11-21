@@ -85,6 +85,52 @@ public class GameBusinessService {
     }
 
     @Autowired
+    private TeamRepository teamRepository;
+
+
+
+    public void addTeamToPlayer(Game game){
+
+        Player tempplayer;
+
+        Team team1 = new Team();
+        Team team2 = new Team();
+
+        team1.setScore(0);
+        team2.setScore(0);
+
+
+        //Add players to team1
+        tempplayer = game.getPlayers().get(0);
+        tempplayer.setTeam(team1);
+        playerRepository.save(tempplayer);
+
+        tempplayer = game.getPlayers().get(1);
+        tempplayer.setTeam(team1);
+        playerRepository.save(tempplayer);
+
+        //Add players to team 2
+        tempplayer = game.getPlayers().get(2);
+        tempplayer.setTeam(team2);
+        playerRepository.save(tempplayer);
+
+        tempplayer = game.getPlayers().get(3);
+        tempplayer.setTeam(team1);
+        playerRepository.save(tempplayer);
+
+
+
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+
+
+
+
+    }
+
+
+
+    @Autowired
     private ProfileRepository profileRepository;
 
     @Autowired
@@ -101,6 +147,16 @@ public class GameBusinessService {
             throw new Exception("Invalid Game.");
         }
     }
+
+    public boolean verificateStartofGame(Game game){
+
+        if(game.getPlayers().size()==4) return true;
+
+        return false;
+    }
+
+
+
 
     public Game joinGame(Long profileID, Long gameID){
         Profile profile = profileRepository.findProfileById(profileID);
@@ -144,8 +200,6 @@ public class GameBusinessService {
         tempPlayer.setName(name);
         // Checks if there is already players involved. If not then the created player becomes the owner
         tempPlayer.setHost(game.getPlayers()==null);
-        //TODO Set player to team. Not possible yet.
-        //TODO Link player with profile
         tempPlayer.setGame(game);
         return tempPlayer;
     }
