@@ -18,6 +18,11 @@ public class ProfileService {
     public void saveProfile(Profile profile) throws Exception {
         try {
             profileRepository.save(profile);
+
+            if(profile.isGuest()){
+                profile.setUsername("Guest"+profile.getId().toString());
+            }
+
         } catch (Exception e){
             throw new Exception("Invalid Profile information.");
         }

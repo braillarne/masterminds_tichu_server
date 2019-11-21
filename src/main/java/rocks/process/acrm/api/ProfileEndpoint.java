@@ -54,4 +54,22 @@ public class ProfileEndpoint {
 
         return ResponseEntity.created(location).body(profile);
     }
+
+    @GetMapping(path = "/profile/newGuest", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Profile> postProfile() throws Exception {
+        Profile profile = new Profile();
+        profile.setGuest(true);
+
+        try {
+            profileService.saveProfile(profile);
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
+        }
+
+        URI location = ServletUriComponentsBuilder
+            .fromCurrentRequest().path("/{customerId}")
+            .buildAndExpand(profile.getId()).toUri();
+
+        return ResponseEntity.created(location).body(profile);
+    }
 }
