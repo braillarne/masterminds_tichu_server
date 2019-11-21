@@ -10,6 +10,7 @@ public class Game {
     @Id
     @GeneratedValue
     private Long gameId;
+    private String name;
     @OneToMany(mappedBy = "game")
     private List<Player> players;
     private int currentRound;
@@ -18,13 +19,20 @@ public class Game {
     @OneToOne
     @JsonBackReference(value = "deck-game")
     private Deck deck;
-
     public Long getGameId() {
         return gameId;
     }
 
     public void setGameId(Long gameId) {
         this.gameId = gameId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<Player> getPlayers() {

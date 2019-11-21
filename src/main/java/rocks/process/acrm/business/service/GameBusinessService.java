@@ -70,14 +70,16 @@ public class GameBusinessService {
     private GameRepository gameRepository;
 
     public Game createGame(Long profileID, String name) {
+        Profile p = profileRepository.findProfileById(profileID);
         Game tempGame = gameRepository.save(new Game());
         Deck tempDeck = deckRepository.save(createDeck());
-        Player tempPlayer = createPlayer(profileID, name, tempGame);
+        Player tempPlayer = createPlayer(profileID, p.getUsername(), tempGame);
         playerRepository.save(tempPlayer);
         List<Player> players = new ArrayList<>();
         players.add(tempPlayer);
         tempGame.setPlayers(players);
         tempGame.setDeck(tempDeck);
+        tempGame.setName(name);
         return gameRepository.save(tempGame);
     }
 

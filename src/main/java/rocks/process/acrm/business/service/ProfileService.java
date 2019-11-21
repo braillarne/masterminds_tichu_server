@@ -1,9 +1,7 @@
 package rocks.process.acrm.business.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import rocks.process.acrm.data.domain.Profile;
 import rocks.process.acrm.data.repository.ProfileRepository;
 
