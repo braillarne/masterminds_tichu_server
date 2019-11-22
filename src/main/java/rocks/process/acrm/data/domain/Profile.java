@@ -55,12 +55,37 @@ public class Profile {
         isGuest = guest;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public List<Result> getResults() {
+        return results;
+    }
+
+    public void setResults(List<Result> results) {
+        this.results = results;
+    }
+
+    public Setting getSetting() {
+        return setting;
+    }
+
+    public void setSetting(Setting setting) {
+        this.setting = setting;
+    }
+
     @Id
     @GeneratedValue
     private Long id;
     private String firstname;
     private String lastname;
     private String username;
+    private String avatar;
     private String password;
     private boolean isGuest;
     @ManyToMany(mappedBy = "profile")
