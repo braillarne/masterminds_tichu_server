@@ -33,7 +33,7 @@ public class Deck {
         addSword();
         addPagoda();
         addStar();
-        addSpecial();
+       // addSpecial();
         this.shuffle();
     }
 

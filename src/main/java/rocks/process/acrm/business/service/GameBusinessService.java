@@ -30,18 +30,20 @@ public class GameBusinessService {
     public Deck createDeck() {
         Deck tempDeck = new Deck();
 
-        //TODO Save method for Cards
 
         //Add Jade
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
             Card tempcard = new Card(i, Suit.JADE);
             tempDeck.getCards().add(tempcard);
+            cardRepository.save(tempcard);
         }
 
         //Add Sword
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
             Card tempcard = new Card(i, Suit.SWORD);
             tempDeck.getCards().add(tempcard);
+            cardRepository.save(tempcard);
+
 
         }
 
@@ -49,25 +51,50 @@ public class GameBusinessService {
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
             Card tempcard = new Card(i, Suit.PAGODA);
             tempDeck.getCards().add(tempcard);
+            cardRepository.save(tempcard);
+
         }
 
         //Add Star
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
             Card tempcard = new Card(i, Suit.STAR);
             tempDeck.getCards().add(tempcard);
+            cardRepository.save(tempcard);
+
         }
 
         //Shuffle the deck
         Collections.shuffle(tempDeck.getCards());
 
-        //TODO Save deck method
-
+        deckRepository.save(tempDeck);
         return tempDeck;
     }
 
 
     @Autowired
     private GameRepository gameRepository;
+
+    public void initalizeGame(Game game){
+      // Game game = gameRepository.findByGameId(id);
+        //Add teams to the players
+        setTeamToPlayer(game);
+
+        //Distribute cards to different players
+        int counter = 13;
+        for(int i = 0; i<game.getPlayers().size();i++){
+            for(int t = counter - 13; t<counter;t++){
+                Card tempcard = game.getDeck().getCards().get(t);
+                Player tempplayer = game.getPlayers().get(i);
+
+                tempplayer.addOneCardToHand(tempcard);
+
+            }
+            counter = counter +14;
+        }
+
+
+
+    }
 
     public Game createGame(Long profileID, String name) {
         Profile p = profileRepository.findProfileById(profileID);
@@ -89,7 +116,7 @@ public class GameBusinessService {
 
 
 
-    public void addTeamToPlayer(Game game){
+    public void setTeamToPlayer(Game game){
 
         Player tempplayer;
 
