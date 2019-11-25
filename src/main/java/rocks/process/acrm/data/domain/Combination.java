@@ -7,9 +7,23 @@ import java.util.List;
 
 @Entity
 public class Combination {
-    public Combination(List<Card> cards, CombinationType combinationType, int mainRank) {
+    public void setCards(List<Card> cards) {
         this.cards = cards;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public void setCombinationType(CombinationType combinationType) {
         this.combinationType = combinationType;
+    }
+
+    public void setMainRank(int mainRank) {
         this.mainRank = mainRank;
     }
 

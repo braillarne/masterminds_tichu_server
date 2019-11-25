@@ -21,6 +21,16 @@ public class GameBusinessService {
     @Autowired
     private CombinationRepository combinationRepository;
 
+    public Combination createCombination(List<Card> cards, CombinationType combinationType, int mainRank) {
+        Combination tempComb = new Combination();
+        tempComb.setCards(cards);
+        tempComb.setCombinationType(combinationType);
+        tempComb.setMainRank(mainRank);
+
+        return tempComb;
+
+    }
+
     @Autowired
     private CustomerRepository customerRepository;
 
@@ -240,11 +250,29 @@ public class GameBusinessService {
     }
 
 
-    public boolean isPair(List<Card> transmittedcards) {
+    public Combination isPair(List<Card> transmittedcards) {
+        ArrayList<Card> tempPair = new ArrayList<>();
         if (transmittedcards.size() == 2 && transmittedcards.get(0).getRank() == transmittedcards.get(1).getRank()) {
-            return true;
 
-        } else return false;
+            tempPair.add(transmittedcards.get(0));
+            tempPair.add(transmittedcards.get(1));
+
+            //Add together main ranks of all the cards
+            int allranks = 0;
+            for(int i = 0; i<tempPair.size();i++){
+
+                allranks = allranks + tempPair.get(i).getRank();
+            }
+
+
+            Combination tempcomb = createCombination(tempPair,CombinationType.PAIR,allranks);
+
+            return tempcomb;
+
+
+        }
+
+        else return null;
     }
 
     public boolean isTriple(List<Card> transmittedcards) {
@@ -339,55 +367,7 @@ public class GameBusinessService {
     }
 
 
-    public List<Combination> addPossiblePairsToPlayableCombinations(List<Card> hand) {
-        List<Combination> combinationList = new ArrayList<>();
 
-        for (int i = 0; i < hand.size(); i++) {
-            for (int j = i + 1; j < hand.size(); j++) {
-                if (hand.get(i).getRank() == hand.get(j).getRank()) {
-                    List<Card> temp = new ArrayList<>();
-                    temp.add(hand.get(i));
-                    temp.add(hand.get(j));
-                    Combination newPair = new Combination(temp, CombinationType.PAIR, hand.get(i).getRank());
-                    combinationList.add(newPair);
-                }
-            }
-        }
-        return combinationList;
-    }
 
-    public List<Combination> addPossibleRunningPairs(List<Combination> pairs) {
-        List<Combination> runningPairs = new ArrayList<>();
 
-        if (pairs.size() < 2) {
-            return runningPairs;
-        } else {
-            for (int i = 0; i < pairs.size() - 1; i++) {
-                List<Card> temp = new ArrayList<>();
-                if (pairs.get(i).getMainRank() + 1 == pairs.get(i + 1).getMainRank()) {
-                    if (!temp.contains(pairs.get(i).getCards())) {
-                        for (Card c : pairs.get(i).getCards()
-                        ) {
-                            temp.add(c);
-                        }
-                    }
-                    if (!temp.contains(pairs.get(i + 1).getCards())) {
-                        for (Card c : pairs.get(i + 1).getCards()
-                        ) {
-                            temp.add(c);
-                        }
-                    }
-
-                }
-                int score = 0;
-                for (Card c : temp
-                ) {
-                    score += c.getRank();
-                }
-                runningPairs.add(new Combination(temp, CombinationType.RUNPAIR, score));
-            }
-        }
-
-        return runningPairs;
-    }
 }
