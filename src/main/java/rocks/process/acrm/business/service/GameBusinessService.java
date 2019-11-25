@@ -128,7 +128,7 @@ public class GameBusinessService {
     public Game createGame(Long profileID, String name) {
         Profile p = profileRepository.findProfileById(profileID);
         Game tempGame = gameRepository.save(new Game());
-        Player tempPlayer = createPlayer(profileID, p.getUsername(), tempGame);
+        Player tempPlayer = createPlayer(profileID, p.getAvatar(), p.getUsername(), tempGame);
         playerRepository.save(tempPlayer);
         List<Player> players = new ArrayList<>();
         players.add(tempPlayer);
@@ -215,7 +215,7 @@ public class GameBusinessService {
     public Game joinGame(Long profileID, Long gameID){
         Profile profile = profileRepository.findProfileById(profileID);
         Game game = gameRepository.findByGameId(gameID);
-        Player tempPlayer = createPlayer(profileID, profile.getUsername(), game);
+        Player tempPlayer = createPlayer(profileID, profile.getAvatar(), profile.getUsername(), game);
 
         List<Player> playerList = game.getPlayers();
         playerList.add(playerRepository.save(tempPlayer));
@@ -250,10 +250,11 @@ public class GameBusinessService {
         playerRepository.save(player);
     }
 
-    public Player createPlayer(Long profileID, String name, Game game){
+    public Player createPlayer(Long profileID, int avatarID, String name, Game game){
         Player tempPlayer = new Player();
 
         tempPlayer.setProfileID(profileID);
+        tempPlayer.setAvatarID(avatarID);
         tempPlayer.setName(name);
         // Checks if there is already players involved. If not then the created player becomes the owner
         tempPlayer.setHost(game.getPlayers()==null);

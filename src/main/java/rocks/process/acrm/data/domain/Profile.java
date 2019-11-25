@@ -55,11 +55,11 @@ public class Profile {
         isGuest = guest;
     }
 
-    public String getAvatar() {
+    public int getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar) {
+    public void setAvatar(int avatar) {
         this.avatar = avatar;
     }
 
@@ -85,7 +85,7 @@ public class Profile {
     private String firstname;
     private String lastname;
     private String username;
-    private String avatar;
+    private int avatar;
     private String password;
     private boolean isGuest;
     @ManyToMany(mappedBy = "profile")
