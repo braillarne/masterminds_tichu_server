@@ -12,6 +12,7 @@ public class Player {
     @GeneratedValue
     private Long id;
     private Long profileID;
+    private int avatarID;
     //@NotEmpty(message = "Please provide a name.")
     private String name;
     //@NotEmpty
@@ -82,6 +83,26 @@ public class Player {
 
     public void setPlayableCombinations(List<Combination> playableCombinations) {
         this.playableCombinations = playableCombinations;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public int getAvatarID() {
+        return avatarID;
+    }
+
+    public void setAvatarID(int avatarID) {
+        this.avatarID = avatarID;
+    }
+
+    public void setHand(List<Card> hand) {
+        this.hand = hand;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
     }
 
     public void givePlayToken() {
