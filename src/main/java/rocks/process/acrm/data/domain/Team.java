@@ -1,5 +1,7 @@
 package rocks.process.acrm.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -24,4 +26,7 @@ public class Team {
     @GeneratedValue
     private Long teamId;
     private int score;
+    @OneToOne
+    @JsonBackReference(value = "team-game")
+    private Game game;
 }

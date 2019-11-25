@@ -39,85 +39,82 @@ public class GameBusinessService {
     @Autowired
     private DeckRepository deckRepository;
 
-    public Deck createDeck() {
-        Deck tempDeck = new Deck();
-
+    public List<Card> createDeck() {
+        List<Card> deck = new ArrayList<>();
 
         //Add Jade
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
-            Card tempcard = new Card(i, Suit.JADE);
-            tempDeck.getCards().add(tempcard);
+            Card tempcard = new Card();
+            tempcard.setRank(i);
+            tempcard.setSuit(Suit.JADE);
             cardRepository.save(tempcard);
+            deck.add(tempcard);
         }
 
         //Add Sword
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
-            Card tempcard = new Card(i, Suit.SWORD);
-            tempDeck.getCards().add(tempcard);
+            Card tempcard = new Card();
+            tempcard.setRank(i);
+            tempcard.setSuit(Suit.SWORD);
             cardRepository.save(tempcard);
-
-
+            deck.add(tempcard);
         }
 
         //Add Pagoda
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
-            Card tempcard = new Card(i, Suit.PAGODA);
-            tempDeck.getCards().add(tempcard);
+            Card tempcard = new Card();
+            tempcard.setRank(i);
+            tempcard.setSuit(Suit.PAGODA);
             cardRepository.save(tempcard);
+            deck.add(tempcard);
 
         }
 
         //Add Star
         for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
-            Card tempcard = new Card(i, Suit.STAR);
-            tempDeck.getCards().add(tempcard);
+            Card tempcard = new Card();
+            tempcard.setRank(i);
+            tempcard.setSuit(Suit.STAR);
             cardRepository.save(tempcard);
-
+            deck.add(tempcard);
         }
 
         //Shuffle the deck
-        Collections.shuffle(tempDeck.getCards());
-
-        deckRepository.save(tempDeck);
-        return tempDeck;
+        Collections.shuffle(deck);
+        return deck;
     }
 
 
     @Autowired
     private GameRepository gameRepository;
 
-    public Game initalizeGame(Game game){
-      // Game game = gameRepository.findByGameId(id);
+    public Game initializeGame(Game game){
+        // Game game = gameRepository.findByGameId(id);
         //Add teams to the players
         setTeamToPlayer(game);
-        initalizeRound(game);
+        initializeRound(game);
         return game;
     }
 
-    public void initalizeRound(Game game){
-        Deck tempDeck = deckRepository.save(createDeck());
-        game.setDeck(tempDeck);
+    public void initializeRound(Game game){
+        List<Card> deck = createDeck();
         //Distribute cards to different players
         for (int i = 0; ; i++) {
-
-            game.getPlayers().get(i).addOneCardToHand(tempDeck.getCards().get(0));
-
-            tempDeck.getCards().remove(0);
-
-
             if (i == game.getPlayers().size()) {
 
                 i = 0;
             }
 
-            if (tempDeck.getCards().size() == 0) break;
+            game.getPlayers().get(i).addOneCardToHand(deck.get(0));
+
+            deck.remove(0);
+
+
+            if (deck.size() == 0) break;
 
         }
 
         //Save everything what was modified
-
-        deckRepository.save(tempDeck);
-
         game.getPlayers().forEach(p -> playerRepository.save(p));
 
         gameRepository.save(game);
@@ -153,6 +150,8 @@ public class GameBusinessService {
         team1.setScore(0);
         team2.setScore(0);
 
+        teamRepository.save(team1);
+        teamRepository.save(team2);
 
         //Add players to team1
         tempplayer = game.getPlayers().get(0);
@@ -171,15 +170,6 @@ public class GameBusinessService {
         tempplayer = game.getPlayers().get(3);
         tempplayer.setTeam(team1);
         playerRepository.save(tempplayer);
-
-
-
-        teamRepository.save(team1);
-        teamRepository.save(team2);
-
-
-
-
     }
 
 
@@ -231,14 +221,16 @@ public class GameBusinessService {
                 if(player.isHost()){
                     tempGame.setState(gh.getGameState());
 
-                    tempGame = initalizeGame(tempGame);
+                    tempGame = initializeGame(tempGame);
 
                     return gameRepository.save(tempGame);
                 }else {
                     throw new Exception("Need to be host of the game.");
                 }
             }catch (Exception e){
-                throw new Exception("Need to be host of the game.");
+
+
+                throw new Exception(e.getMessage());
             }
         }else {
             tempGame.setState(gh.getGameState());
@@ -307,7 +299,7 @@ public class GameBusinessService {
 
             Combination tempcomb = createCombination(tempTriple, CombinationType.TRIPLE, allranks, player);
 
-            player.getGame().setCurrentCombination(tempcomb)
+            player.getGame().setCurrentCombination(tempcomb);
 
 
             return true;

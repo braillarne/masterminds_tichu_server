@@ -13,9 +13,7 @@ public class Card {
     @Id
     @GeneratedValue
     private Long id;
-    @NotEmpty
     private int rank;
-    @NotEmpty
     private Suit suit;
     private static final int MAX_RANK = 14;
     private static final int MIN_RANK = 2;
@@ -25,16 +23,38 @@ public class Card {
     @ManyToMany
     @JsonBackReference(value = "card-combination")
     private List<Combination> playableCombinations;
-    @ManyToOne
-    @JsonBackReference(value = "card-deck")
-    private Deck deck;
 
-    public Card(int rank, Suit suit) {
-        this.rank = rank;
-        this.suit = suit;
+    public Long getId() {
+        return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public static int getMaxRank() {
+        return MAX_RANK;
+    }
+
+    public static int getMinRank() {
+        return MIN_RANK;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public List<Combination> getPlayableCombinations() {
+        return playableCombinations;
+    }
+
+    public void setPlayableCombinations(List<Combination> playableCombinations) {
+        this.playableCombinations = playableCombinations;
+    }
     /*@Override
     public int compareTo(Card i){
         if (this.rank == i.rank) return 0;

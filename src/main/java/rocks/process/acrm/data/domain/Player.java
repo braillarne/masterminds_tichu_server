@@ -129,12 +129,6 @@ public class Player {
         this.hand.removeAll(cards);
     }
 
-    public Card draw(Deck deck) {
-        Card tempCard = deck.giveRandomCard();
-        this.addOneCardToHand(tempCard);
-        return tempCard;
-    }
-
     public void pushCards(Player targetPlayer, List<Card> pushedCards) {
         this.removeCardsFromHand(pushedCards);
         targetPlayer.addCardsToHand(pushedCards);

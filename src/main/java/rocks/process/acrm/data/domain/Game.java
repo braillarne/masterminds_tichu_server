@@ -13,13 +13,14 @@ public class Game {
     private String name;
     @OneToMany(mappedBy = "game")
     private List<Player> players;
-
+    @ManyToMany
+    private List<Team> teams;
     private int currentRound;
+    @OneToOne
+    @JsonBackReference(value = "combination-game")
+    private Combination currentCombination;
     private int maxRound;
     private State state;
-    @OneToOne
-    @JsonBackReference(value = "deck-game")
-    private Deck deck;
     public Long getGameId() {
         return gameId;
     }
@@ -76,11 +77,19 @@ public class Game {
         this.currentRound = currentRound;
     }
 
-    public Deck getDeck() {
-        return deck;
+    public Combination getCurrentCombination() {
+        return currentCombination;
     }
 
-    public void setDeck(Deck deck) {
-        this.deck = deck;
+    public void setCurrentCombination(Combination currentCombination) {
+        this.currentCombination = currentCombination;
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
     }
 }
