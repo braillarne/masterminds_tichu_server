@@ -21,11 +21,13 @@ public class GameBusinessService {
     @Autowired
     private CombinationRepository combinationRepository;
 
-    public Combination createCombination(List<Card> cards, CombinationType combinationType, int mainRank) {
+    public Combination createCombination(List<Card> cards, CombinationType combinationType, int mainRank, Player player) {
         Combination tempComb = new Combination();
         tempComb.setCards(cards);
         tempComb.setCombinationType(combinationType);
         tempComb.setMainRank(mainRank);
+        tempComb.setPlayer(player);
+        combinationRepository.save(tempComb);
 
         return tempComb;
 
@@ -96,17 +98,31 @@ public class GameBusinessService {
         Deck tempDeck = deckRepository.save(createDeck());
         game.setDeck(tempDeck);
         //Distribute cards to different players
-        int counter = 13;
-        for(int i = 0; i<game.getPlayers().size();i++){
-            for(int t = counter - 13; t<counter;t++){
-                Card tempcard = game.getDeck().getCards().get(t);
-                Player tempplayer = game.getPlayers().get(i);
+        for (int i = 0; ; i++) {
 
-                tempplayer.addOneCardToHand(tempcard);
+            game.getPlayers().get(i).addOneCardToHand(tempDeck.getCards().get(0));
 
+            tempDeck.getCards().remove(0);
+
+
+            if (i == game.getPlayers().size()) {
+
+                i = 0;
             }
-            counter = counter +14;
+
+            if (tempDeck.getCards().size() == 0) break;
+
         }
+
+        //Save everything what was modified
+
+        deckRepository.save(tempDeck);
+
+        game.getPlayers().forEach(p -> playerRepository.save(p));
+
+        gameRepository.save(game);
+
+
     }
 
     public Game createGame(Long profileID, String name) {
@@ -250,41 +266,57 @@ public class GameBusinessService {
     }
 
 
-    public Combination isPair(List<Card> transmittedcards) {
+    public Boolean isPair(List<Card> transmittedcards, long id) {
+        Player player = playerRepository.findOnePlayerById(id);
         ArrayList<Card> tempPair = new ArrayList<>();
         if (transmittedcards.size() == 2 && transmittedcards.get(0).getRank() == transmittedcards.get(1).getRank()) {
 
-            tempPair.add(transmittedcards.get(0));
-            tempPair.add(transmittedcards.get(1));
+            transmittedcards.forEach(card -> tempPair.add(card));
+
+
 
             //Add together main ranks of all the cards
-            int allranks = 0;
-            for(int i = 0; i<tempPair.size();i++){
-
-                allranks = allranks + tempPair.get(i).getRank();
-            }
+            int allranks = calculateCombinationScore(tempPair);
 
 
-            Combination tempcomb = createCombination(tempPair,CombinationType.PAIR,allranks);
+            Combination tempcomb = createCombination(tempPair, CombinationType.PAIR, allranks, player);
 
-            return tempcomb;
+            player.getGame().setCurrentCombination(tempcomb);
+
+            return true;
 
 
-        }
-
-        else return null;
+        } else return false;
     }
 
-    public boolean isTriple(List<Card> transmittedcards) {
+    public boolean isTriple(List<Card> transmittedcards, long id) {
+        Player player = playerRepository.findOnePlayerById(id);
+        ArrayList<Card> tempTriple = new ArrayList<>();
         if (transmittedcards.size() == 3
                 && transmittedcards.get(0).getRank() == transmittedcards.get(1).getRank()
                 && transmittedcards.get(0).getRank() == transmittedcards.get(2).getRank()) {
+
+
+            transmittedcards.forEach(card -> tempTriple.add(card));
+
+
+            //Add together main ranks of all the cards
+            int allranks = calculateCombinationScore(tempTriple);
+
+
+            Combination tempcomb = createCombination(tempTriple, CombinationType.TRIPLE, allranks, player);
+
+            player.getGame().setCurrentCombination(tempcomb)
+
+
             return true;
 
         } else return false;
     }
 
-    public boolean isRunningPair(List<Card> transmittedCards) {
+    public boolean isRunningPair(List<Card> transmittedCards, long id) {
+        Player player = playerRepository.findOnePlayerById(id);
+        ArrayList<Card> tempTriple = new ArrayList<>();
         transmittedCards.sort(Comparator.comparing(Card::getRank));
         if (transmittedCards.size() < 4) return false;
         int counter = 0;
@@ -294,7 +326,11 @@ public class GameBusinessService {
             }
         }
         //n pairs take n-1 comparisons. We determine n pairs by dividing with two.
-        if (counter == transmittedCards.size() / 2 - 1) return true;
+        if (counter == transmittedCards.size() / 2 - 1) {
+
+
+            return true;
+        }
         return false;
     }
 
@@ -338,6 +374,18 @@ public class GameBusinessService {
         if (counter + 1 == transmittedCards.size()) return true;
 
         return false;
+    }
+
+    public int calculateCombinationScore(List<Card> cards) {
+
+        //Add together main ranks of all the cards
+        int allranks = 0;
+        for (int i = 0; i < cards.size(); i++) {
+
+            allranks = allranks + cards.get(i).getRank();
+        }
+
+        return allranks;
     }
 
     public boolean isBomb(List<Card> transmittedCards) {
