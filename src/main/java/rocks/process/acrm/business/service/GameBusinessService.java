@@ -74,11 +74,17 @@ public class GameBusinessService {
     @Autowired
     private GameRepository gameRepository;
 
-    public void initalizeGame(Game game){
+    public Game initalizeGame(Game game){
       // Game game = gameRepository.findByGameId(id);
         //Add teams to the players
         setTeamToPlayer(game);
+        initalizeRound(game);
+        return game;
+    }
 
+    public void initalizeRound(Game game){
+        Deck tempDeck = deckRepository.save(createDeck());
+        game.setDeck(tempDeck);
         //Distribute cards to different players
         int counter = 13;
         for(int i = 0; i<game.getPlayers().size();i++){
@@ -91,21 +97,16 @@ public class GameBusinessService {
             }
             counter = counter +14;
         }
-
-
-
     }
 
     public Game createGame(Long profileID, String name) {
         Profile p = profileRepository.findProfileById(profileID);
         Game tempGame = gameRepository.save(new Game());
-        Deck tempDeck = deckRepository.save(createDeck());
         Player tempPlayer = createPlayer(profileID, p.getUsername(), tempGame);
         playerRepository.save(tempPlayer);
         List<Player> players = new ArrayList<>();
         players.add(tempPlayer);
         tempGame.setPlayers(players);
-        tempGame.setDeck(tempDeck);
         tempGame.setName(name);
         tempGame.setState(State.OPEN);
         return gameRepository.save(tempGame);
@@ -203,6 +204,9 @@ public class GameBusinessService {
                 Player player = playerRepository.findOnePlayerById(gh.getPlayerID());
                 if(player.isHost()){
                     tempGame.setState(gh.getGameState());
+
+                    tempGame = initalizeGame(tempGame);
+
                     return gameRepository.save(tempGame);
                 }else {
                     throw new Exception("Need to be host of the game.");

@@ -13,6 +13,7 @@ public class Game {
     private String name;
     @OneToMany(mappedBy = "game")
     private List<Player> players;
+
     private int currentRound;
     private int maxRound;
     private State state;
