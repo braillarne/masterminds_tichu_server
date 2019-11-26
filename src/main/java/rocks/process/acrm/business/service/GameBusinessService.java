@@ -215,7 +215,7 @@ public class GameBusinessService {
 
     public Game updateGameState(GameHandler gh) throws Exception{
         Game tempGame = gameRepository.findByGameId(gh.getGameID());
-        if(gh.getGameState().equals(State.RUNNING)){
+        if(gh.getGameState().equals(State.RUNNING)||gh.getGameState().equals(State.CLOSED)){
             try {
                 Player player = playerRepository.findOnePlayerById(gh.getPlayerID());
                 if(player.isHost()){
@@ -236,6 +236,26 @@ public class GameBusinessService {
             tempGame.setState(gh.getGameState());
         }
         return gameRepository.save(tempGame);
+    }
+
+    public void unregisterFromGame(GameHandler gameHandler) {
+        Game game = gameRepository.findByGameId(gameHandler.getGameID());
+        Player player = playerRepository.findOnePlayerById(gameHandler.getPlayerID());
+
+        if(player.isHost()){
+            if(game.getPlayers().size()>1){
+                Player newHost = game.getPlayers().get(1);
+                newHost.setHost(true);
+                playerRepository.save(newHost);
+                playerRepository.delete(player);
+            }else {
+                playerRepository.delete(player);
+                game.setState(State.CLOSED);
+                gameRepository.save(game);
+            }
+        } else {
+            playerRepository.delete(player);
+        }
     }
 
     public void savePlayer(Player player) throws Exception {
