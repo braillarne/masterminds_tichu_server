@@ -332,7 +332,7 @@ public class GameBusinessService {
 
             Combination tempcomb = createCombination(tempRunning, CombinationType.RUNPAIR, allranks, player);
 
-            player.getGame().setCurrentCombination(tempcomb)
+            player.getGame().setCurrentCombination(tempcomb);
 
 
 
