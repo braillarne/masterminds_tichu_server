@@ -5,10 +5,7 @@ import org.springframework.stereotype.Service;
 import rocks.process.acrm.data.domain.*;
 import rocks.process.acrm.data.repository.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class GameBusinessService {
@@ -133,6 +130,46 @@ public class GameBusinessService {
         tempGame.setName(name);
         tempGame.setState(State.OPEN);
         return gameRepository.save(tempGame);
+    }
+
+    public void passToken(GameHandler gameHandler) {
+
+        Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
+        Game currentGame = gameRepository.getOne(gameHandler.getGameID());
+
+        int currentIndex = currentGame.getPlayers().indexOf(currentPlayer);
+
+        ListIterator<Player> iterator = currentGame.getPlayers().listIterator(currentIndex);
+
+        if (iterator.hasNext()) {
+
+            if (iterator.next().getHand().size() > 0) {
+
+                iterator.previous().removePlayToken();
+                iterator.next().givePlayToken();
+
+            } else {
+                gameHandler.setPlayerID(iterator.next().getId());
+                passToken(gameHandler);
+            }
+
+
+        } else {
+
+            iterator.previous().removePlayToken();
+
+            for (int i = 0; i < currentGame.getPlayers().size(); i++) {
+                iterator.previous();
+            }
+
+            if (iterator.next().getHand().size() > 0) {
+                iterator.next().givePlayToken();
+
+            } else {
+                passToken(gameHandler);
+            }
+
+        }
     }
 
     @Autowired
