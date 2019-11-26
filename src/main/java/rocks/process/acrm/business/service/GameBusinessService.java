@@ -85,7 +85,7 @@ public class GameBusinessService {
     @Autowired
     private GameRepository gameRepository;
 
-    public Game initializeGame(Game game){
+    public Game initializeGame(Game game) {
         // Game game = gameRepository.findByGameId(id);
         //Add teams to the players
         setTeamToPlayer(game);
@@ -93,7 +93,7 @@ public class GameBusinessService {
         return game;
     }
 
-    public void initializeRound(Game game){
+    public void initializeRound(Game game) {
         List<Card> deck = createDeck();
         //Distribute cards to different players
         for (int i = 0; ; i++) {
@@ -187,8 +187,7 @@ public class GameBusinessService {
     private TeamRepository teamRepository;
 
 
-
-    public void setTeamToPlayer(Game game){
+    public void setTeamToPlayer(Game game) {
 
         Player tempplayer;
 
@@ -221,7 +220,6 @@ public class GameBusinessService {
     }
 
 
-
     @Autowired
     private ProfileRepository profileRepository;
 
@@ -240,17 +238,15 @@ public class GameBusinessService {
         }
     }
 
-    public boolean verificateStartofGame(Game game){
+    public boolean verificateStartofGame(Game game) {
 
-        if(game.getPlayers().size()==4) return true;
+        if (game.getPlayers().size() == 4) return true;
 
         return false;
     }
 
 
-
-
-    public Game joinGame(Long profileID, Long gameID){
+    public Game joinGame(Long profileID, Long gameID) {
         Profile profile = profileRepository.findProfileById(profileID);
         Game game = gameRepository.findByGameId(gameID);
         Player tempPlayer = createPlayer(profileID, profile.getAvatar(), profile.getUsername(), game);
@@ -261,26 +257,26 @@ public class GameBusinessService {
         return gameRepository.save(game);
     }
 
-    public Game updateGameState(GameHandler gh) throws Exception{
+    public Game updateGameState(GameHandler gh) throws Exception {
         Game tempGame = gameRepository.findByGameId(gh.getGameID());
-        if(gh.getGameState().equals(State.RUNNING)||gh.getGameState().equals(State.CLOSED)){
+        if (gh.getGameState().equals(State.RUNNING) || gh.getGameState().equals(State.CLOSED)) {
             try {
                 Player player = playerRepository.findOnePlayerById(gh.getPlayerID());
-                if(player.isHost()){
+                if (player.isHost()) {
                     tempGame.setState(gh.getGameState());
 
                     tempGame = initializeGame(tempGame);
 
                     return gameRepository.save(tempGame);
-                }else {
+                } else {
                     throw new Exception("Need to be host of the game.");
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
 
 
                 throw new Exception(e.getMessage());
             }
-        }else {
+        } else {
             tempGame.setState(gh.getGameState());
         }
         return gameRepository.save(tempGame);
@@ -290,13 +286,13 @@ public class GameBusinessService {
         Game game = gameRepository.findByGameId(gameHandler.getGameID());
         Player player = playerRepository.findOnePlayerById(gameHandler.getPlayerID());
 
-        if(player.isHost()){
-            if(game.getPlayers().size()>1){
+        if (player.isHost()) {
+            if (game.getPlayers().size() > 1) {
                 Player newHost = game.getPlayers().get(1);
                 newHost.setHost(true);
                 playerRepository.save(newHost);
                 playerRepository.delete(player);
-            }else {
+            } else {
                 playerRepository.delete(player);
                 game.setState(State.CLOSED);
                 gameRepository.save(game);
@@ -310,14 +306,14 @@ public class GameBusinessService {
         playerRepository.save(player);
     }
 
-    public Player createPlayer(Long profileID, int avatarID, String name, Game game){
+    public Player createPlayer(Long profileID, int avatarID, String name, Game game) {
         Player tempPlayer = new Player();
 
         tempPlayer.setProfileID(profileID);
         tempPlayer.setAvatarID(avatarID);
         tempPlayer.setName(name);
         // Checks if there is already players involved. If not then the created player becomes the owner
-        tempPlayer.setHost(game.getPlayers()==null);
+        tempPlayer.setHost(game.getPlayers() == null);
         tempPlayer.setGame(game);
         return tempPlayer;
     }
@@ -326,23 +322,96 @@ public class GameBusinessService {
         return playerRepository.findByName(name);
     }
 
+    public void determineCombination(MoveHandler moveHandler) {
 
-    public Boolean isPair(List<Card> transmittedcards, long id) {
-        Player player = playerRepository.findOnePlayerById(id);
-        ArrayList<Card> tempPair = new ArrayList<>();
-        if (transmittedcards.size() == 2 && transmittedcards.get(0).getRank() == transmittedcards.get(1).getRank()) {
-
-            transmittedcards.forEach(card -> tempPair.add(card));
+        Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
+        Game currentGame = gameRepository.getOne(currentPlayer.getGame().getId());
+        String currentCombination = currentGame.getCurrentCombination().getCombinationType().toString();
 
 
+        switch (currentCombination) {
 
-            //Add together main ranks of all the cards
-            int allranks = calculateCombinationScore(tempPair);
+            case "CombinationType.SINGLE":
+                isSingle(moveHandler);
+                break;
+
+            case "CombinationType.PAIR":
+                isPair(moveHandler);
+                break;
+
+            case "CombinationType.RUNPAIR":
+                isRunningPair(moveHandler);
+                break;
+
+            case "CombinationType.TRIPLE":
+                isTriple(moveHandler);
+                break;
+
+            case "CombinationType.FULLHOUSE":
+                isFullHouse(moveHandler);
+
+            case "CombinationType.ROW":
+                isRow(moveHandler);
+                break;
+
+            case "CombinationType.BOMB":
+                isBomb(moveHandler);
+                break;
+
+        }
 
 
-            Combination tempcomb = createCombination(tempPair, CombinationType.PAIR, allranks, player);
+    }
 
-            player.getGame().setCurrentCombination(tempcomb);
+    public Boolean createCombinationFromCards(MoveHandler moveHandler) {
+
+        Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
+        Game currentGame = gameRepository.getOne(currentPlayer.getGame().getId());
+        Combination currentCombination = currentGame.getCurrentCombination();
+
+        int allranks = calculateCombinationScore(moveHandler.getCards());
+
+        if (allranks > currentCombination.getMainRank()) {
+
+
+            Combination tempcomb = createCombination(moveHandler.getCards(), currentCombination.getCombinationType(), allranks, currentPlayer);
+            combinationRepository.save(tempcomb);
+
+            currentGame.setCurrentCombination(tempcomb);
+            gameRepository.save(currentGame);
+
+            GameHandler gameHandler = new GameHandler();
+            gameHandler.setPlayerID(currentPlayer.getId());
+            gameHandler.setGameID(currentGame.getGameId());
+            passToken(gameHandler);
+
+
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public Boolean isSingle(MoveHandler moveHandler) {
+        Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
+
+        if (moveHandler.getCards().size() == 1) {
+
+            createCombinationFromCards(moveHandler);
+            return true;
+        }
+
+        return false;
+    }
+
+    public Boolean isPair(MoveHandler moveHandler) {
+
+        if (moveHandler.getCards().size() == 2 && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()) {
+
+
+            createCombinationFromCards(moveHandler);
+
 
             return true;
 
@@ -350,60 +419,40 @@ public class GameBusinessService {
         } else return false;
     }
 
-    public boolean isTriple(List<Card> transmittedcards, long id) {
-        Player player = playerRepository.findOnePlayerById(id);
-        ArrayList<Card> tempTriple = new ArrayList<>();
-        if (transmittedcards.size() == 3
-                && transmittedcards.get(0).getRank() == transmittedcards.get(1).getRank()
-                && transmittedcards.get(0).getRank() == transmittedcards.get(2).getRank()) {
+    public boolean isTriple(MoveHandler moveHandler) {
+        if (moveHandler.getCards().size() == 3
+                && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()
+                && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(2).getRank()) {
 
 
-            transmittedcards.forEach(card -> tempTriple.add(card));
+            createCombinationFromCards(moveHandler);
 
-
-//Add together main ranks of all the cards
-            int allranks = calculateCombinationScore(tempTriple);
-
-
-            Combination tempcomb = createCombination(tempTriple, CombinationType.TRIPLE, allranks, player);
-
-            player.getGame().setCurrentCombination(tempcomb);
 
             return true;
 
         } else return false;
     }
 
-    public boolean isRunningPair(List<Card> transmittedCards, long id) {
-        Player player = playerRepository.findOnePlayerById(id);
-        ArrayList<Card> tempRunning = new ArrayList<>();
-        transmittedCards.sort(Comparator.comparing(Card::getRank));
+    public boolean isRunningPair(MoveHandler moveHandler) {
 
-        if (transmittedCards.size() < 4) return false;
+
+        moveHandler.getCards().sort(Comparator.comparing(Card::getRank));
+
+        if (moveHandler.getCards().size() < 4) return false;
 
 
         int counter = 0;
-        for (int i = 1; i < transmittedCards.size() - 1; i = i + 2) {
-            if (transmittedCards.get(i).getRank() + 1 == transmittedCards.get(i + 1).getRank()) {
+        for (int i = 1; i < moveHandler.getCards().size() - 1; i = i + 2) {
+            if (moveHandler.getCards().get(i).getRank() + 1 == moveHandler.getCards().get(i + 1).getRank()) {
                 counter++;
             }
         }
 
         //n pairs take n-1 comparisons. We determine n pairs by dividing with two.
-        if (counter == transmittedCards.size() / 2 - 1) {
-
-            transmittedCards.forEach(card -> tempRunning.add(card));
-
-            //Add together main ranks of all the cards
-            int allranks = calculateCombinationScore(tempRunning);
+        if (counter == moveHandler.getCards().size() / 2 - 1) {
 
 
-            Combination tempcomb = createCombination(tempRunning, CombinationType.RUNPAIR, allranks, player);
-
-            player.getGame().setCurrentCombination(tempcomb);
-
-
-
+            createCombinationFromCards(moveHandler);
 
 
             return true;
@@ -411,54 +460,33 @@ public class GameBusinessService {
         return false;
     }
 
-    public boolean isFullHouse(List<Card> transmittedCards, long id) {
-
-        Player player = playerRepository.findOnePlayerById(id);
-        ArrayList<Card> tempFull = new ArrayList<>();
+    public boolean isFullHouse(MoveHandler moveHandler) {
 
 
-
-        if (transmittedCards.size() != 5) return false;
-        transmittedCards.sort(Comparator.comparing(Card::getRank));
+        if (moveHandler.getCards().size() != 5) return false;
+        moveHandler.getCards().sort(Comparator.comparing(Card::getRank));
 
         //Check xxxyy
-        if (transmittedCards.get(0).getRank() == transmittedCards.get(1).getRank()
-                && transmittedCards.get(1).getRank() == transmittedCards.get(2).getRank()
-                && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
+        if (moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()
+                && moveHandler.getCards().get(1).getRank() == moveHandler.getCards().get(2).getRank()
+                && moveHandler.getCards().get(3).getRank() == moveHandler.getCards().get(4).getRank()) {
 
 
-            transmittedCards.forEach(card -> tempFull.add(card));
-
-            //Add together main ranks of all the cards
-            int allranks = calculateCombinationScore(tempFull);
-
-
-            Combination tempcomb = createCombination(tempFull, CombinationType.FULLHOUSE, allranks, player);
-
-            player.getGame().setCurrentCombination(tempcomb);
-
+            createCombinationFromCards(moveHandler);
 
 
             return true;
         }
-
 
 
         //Check xxyyy
-        if (transmittedCards.get(0).getRank() == transmittedCards.get(1).getRank()
-                && transmittedCards.get(2).getRank() == transmittedCards.get(3).getRank()
-                && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
+        if (moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()
+                && moveHandler.getCards().get(2).getRank() == moveHandler.getCards().get(3).getRank()
+                && moveHandler.getCards().get(3).getRank() == moveHandler.getCards().get(4).getRank()) {
 
 
-            transmittedCards.forEach(card -> tempFull.add(card));
+            createCombinationFromCards(moveHandler);
 
-            //Add together main ranks of all the cards
-            int allranks = calculateCombinationScore(tempFull);
-
-
-            Combination tempcomb = createCombination(tempFull, CombinationType.FULLHOUSE, allranks, player);
-
-            player.getGame().setCurrentCombination(tempcomb);
 
             return true;
         }
@@ -467,37 +495,25 @@ public class GameBusinessService {
 
     }
 
-    public boolean isRow(List<Card> transmittedCards, long id) {
+    public boolean isRow(MoveHandler moveHandler) {
 
         int counter = 0;
-        Player player = playerRepository.findOnePlayerById(id);
-        ArrayList<Card> tempRow = new ArrayList<>();
 
 
+        if (moveHandler.getCards().size() < 5) return false;
 
-
-        if (transmittedCards.size() < 5) return false;
-
-        for (int i = 0; i < transmittedCards.size() - 1; i++) {
-            if (transmittedCards.get(i).getRank() + 1 == transmittedCards.get(i + 1).getRank()) {
+        for (int i = 0; i < moveHandler.getCards().size() - 1; i++) {
+            if (moveHandler.getCards().get(i).getRank() + 1 == moveHandler.getCards().get(i + 1).getRank()) {
                 counter++;
 
             }
 
         }
         //n sequence elements need n-1 comparisons
-        if (counter + 1 == transmittedCards.size()) {
+        if (counter + 1 == moveHandler.getCards().size()) {
 
 
-            transmittedCards.forEach(card -> tempRow.add(card));
-
-            //Add together main ranks of all the cards
-            int allranks = calculateCombinationScore(tempRow);
-
-
-            Combination tempcomb = createCombination(tempRow, CombinationType.ROW, allranks, player);
-
-            player.getGame().setCurrentCombination(tempcomb);
+            createCombinationFromCards(moveHandler);
 
 
             return true;
@@ -518,60 +534,40 @@ public class GameBusinessService {
         return allranks;
     }
 
-    public boolean isBomb(List<Card> transmittedCards, long id) {
+    public boolean isBomb(MoveHandler moveHandler) {
 
 
         int counter = 0;
-        Player player = playerRepository.findOnePlayerById(id);
-        ArrayList<Card> tempBomb = new ArrayList<>();
 
 
-
-
-
-        if (transmittedCards.size() == 4) {
-            for (int i = 0; i < transmittedCards.size() - 1; i++) {
-                if (transmittedCards.get(i).getRank() == transmittedCards.get(i + 1).getRank()) {
+        if (moveHandler.getCards().size() == 4) {
+            for (int i = 0; i < moveHandler.getCards().size() - 1; i++) {
+                if (moveHandler.getCards().get(i).getRank() == moveHandler.getCards().get(i + 1).getRank()) {
                     counter++;
                 }
             }
             //n elements of a sequence need n-1 comparisons
-            if (counter + 1 == transmittedCards.size()) {
+            if (counter + 1 == moveHandler.getCards().size()) {
 
 
-                transmittedCards.forEach(card -> tempBomb.add(card));
-
-                //Add together main ranks of all the cards
-                int allranks = calculateCombinationScore(tempBomb);
-
-
-                Combination tempcomb = createCombination(tempBomb, CombinationType.BOMB, allranks, player);
-
-                player.getGame().setCurrentCombination(tempcomb);
+                createCombinationFromCards(moveHandler);
 
 
                 return true;
             }
         }
 
-        if (transmittedCards.size() >= 5) {
-            for (int i = 0; i < transmittedCards.size() - 1; i++) {
-                if (transmittedCards.get(i).getRank() + 1 == transmittedCards.get(i + 1).getRank()
-                        && transmittedCards.get(i).getSuit().equals(transmittedCards.get(i + 1).getSuit())) {
+        if (moveHandler.getCards().size() >= 5) {
+            for (int i = 0; i < moveHandler.getCards().size() - 1; i++) {
+                if (moveHandler.getCards().get(i).getRank() + 1 == moveHandler.getCards().get(i + 1).getRank()
+                        && moveHandler.getCards().get(i).getSuit().equals(moveHandler.getCards().get(i + 1).getSuit())) {
                     counter++;
                 }
             }
-            if (counter + 1 == transmittedCards.size()) {
-
-                transmittedCards.forEach(card -> tempBomb.add(card));
-
-                //Add together main ranks of all the cards
-                int allranks = calculateCombinationScore(tempBomb);
+            if (counter + 1 == moveHandler.getCards().size()) {
 
 
-                Combination tempcomb = createCombination(tempBomb, CombinationType.BOMB, allranks, player);
-
-                player.getGame().setCurrentCombination(tempcomb);
+                createCombinationFromCards(moveHandler);
 
 
                 return true;
@@ -580,9 +576,6 @@ public class GameBusinessService {
 
         return false;
     }
-
-
-
 
 
 }
