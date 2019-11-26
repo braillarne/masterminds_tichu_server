@@ -141,14 +141,22 @@ public class GameBusinessService {
 
         ListIterator<Player> iterator = currentGame.getPlayers().listIterator(currentIndex);
 
+        iterator.next();
+
+
         if (iterator.hasNext()) {
+
 
             if (iterator.next().getHand().size() > 0) {
 
+                iterator.previous();
                 iterator.previous().removePlayToken();
+                playerRepository.save(iterator.next());
                 iterator.next().givePlayToken();
+                playerRepository.save(iterator.previous());
 
             } else {
+                iterator.next();
                 gameHandler.setPlayerID(iterator.next().getId());
                 passToken(gameHandler);
             }
@@ -157,15 +165,18 @@ public class GameBusinessService {
         } else {
 
             iterator.previous().removePlayToken();
+            playerRepository.save(iterator.next());
 
             for (int i = 0; i < currentGame.getPlayers().size(); i++) {
                 iterator.previous();
             }
 
             if (iterator.next().getHand().size() > 0) {
-                iterator.next().givePlayToken();
+                iterator.previous().givePlayToken();
+                playerRepository.save(iterator.next());
 
             } else {
+                gameHandler.setPlayerID(iterator.next().getId());
                 passToken(gameHandler);
             }
 
