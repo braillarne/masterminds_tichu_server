@@ -47,15 +47,20 @@ public class GameEndpoint {
     }
 
     @PutMapping(path = "/game/join", consumes = "application/json", produces = "application/json")
-    public Game joinGame(@RequestBody GameHandler GameHandler) throws Exception {
+    public Game joinGame(@RequestBody GameHandler gameHandler) throws Exception {
         Game newGame = null;
         try {
-            newGame = gameBusinessService.joinGame(GameHandler.getProfileID(), GameHandler.getGameID());
+            newGame = gameBusinessService.joinGame(gameHandler.getProfileID(), gameHandler.getGameID());
         } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
         }
 
         return newGame;
+    }
+
+    @PutMapping(path = "/game/deregister", consumes = "application/json", produces = "application/json")
+    public void deregisterFromGame(@RequestBody GameHandler gameHandler) {
+        gameBusinessService.unregisterFromGame(gameHandler);
     }
 
     @PutMapping(path = "/game/state", consumes = "application/json", produces = "application/json")
