@@ -293,14 +293,13 @@ public class GameBusinessService {
             transmittedcards.forEach(card -> tempTriple.add(card));
 
 
-            //Add together main ranks of all the cards
+//Add together main ranks of all the cards
             int allranks = calculateCombinationScore(tempTriple);
 
 
             Combination tempcomb = createCombination(tempTriple, CombinationType.TRIPLE, allranks, player);
 
             player.getGame().setCurrentCombination(tempcomb);
-
 
             return true;
 
@@ -309,17 +308,34 @@ public class GameBusinessService {
 
     public boolean isRunningPair(List<Card> transmittedCards, long id) {
         Player player = playerRepository.findOnePlayerById(id);
-        ArrayList<Card> tempTriple = new ArrayList<>();
+        ArrayList<Card> tempRunning = new ArrayList<>();
         transmittedCards.sort(Comparator.comparing(Card::getRank));
+
         if (transmittedCards.size() < 4) return false;
+
+
         int counter = 0;
         for (int i = 1; i < transmittedCards.size() - 1; i = i + 2) {
             if (transmittedCards.get(i).getRank() + 1 == transmittedCards.get(i + 1).getRank()) {
                 counter++;
             }
         }
+
         //n pairs take n-1 comparisons. We determine n pairs by dividing with two.
         if (counter == transmittedCards.size() / 2 - 1) {
+
+            transmittedCards.forEach(card -> tempRunning.add(card));
+
+            //Add together main ranks of all the cards
+            int allranks = calculateCombinationScore(tempRunning);
+
+
+            Combination tempcomb = createCombination(tempRunning, CombinationType.RUNPAIR, allranks, player);
+
+            player.getGame().setCurrentCombination(tempcomb)
+
+
+
 
 
             return true;
@@ -327,7 +343,13 @@ public class GameBusinessService {
         return false;
     }
 
-    public boolean isFullHouse(List<Card> transmittedCards) {
+    public boolean isFullHouse(List<Card> transmittedCards, long id) {
+
+        Player player = playerRepository.findOnePlayerById(id);
+        ArrayList<Card> tempFull = new ArrayList<>();
+
+
+
         if (transmittedCards.size() != 5) return false;
         transmittedCards.sort(Comparator.comparing(Card::getRank));
 
@@ -336,14 +358,39 @@ public class GameBusinessService {
                 && transmittedCards.get(1).getRank() == transmittedCards.get(2).getRank()
                 && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
 
+
+            transmittedCards.forEach(card -> tempFull.add(card));
+
+            //Add together main ranks of all the cards
+            int allranks = calculateCombinationScore(tempFull);
+
+
+            Combination tempcomb = createCombination(tempFull, CombinationType.FULLHOUSE, allranks, player);
+
+            player.getGame().setCurrentCombination(tempcomb);
+
+
+
             return true;
         }
+
 
 
         //Check xxyyy
         if (transmittedCards.get(0).getRank() == transmittedCards.get(1).getRank()
                 && transmittedCards.get(2).getRank() == transmittedCards.get(3).getRank()
                 && transmittedCards.get(3).getRank() == transmittedCards.get(4).getRank()) {
+
+
+            transmittedCards.forEach(card -> tempFull.add(card));
+
+            //Add together main ranks of all the cards
+            int allranks = calculateCombinationScore(tempFull);
+
+
+            Combination tempcomb = createCombination(tempFull, CombinationType.FULLHOUSE, allranks, player);
+
+            player.getGame().setCurrentCombination(tempcomb);
 
             return true;
         }
@@ -352,8 +399,15 @@ public class GameBusinessService {
 
     }
 
-    public boolean isRow(List<Card> transmittedCards) {
+    public boolean isRow(List<Card> transmittedCards, long id) {
+
         int counter = 0;
+        Player player = playerRepository.findOnePlayerById(id);
+        ArrayList<Card> tempRow = new ArrayList<>();
+
+
+
+
         if (transmittedCards.size() < 5) return false;
 
         for (int i = 0; i < transmittedCards.size() - 1; i++) {
@@ -364,7 +418,22 @@ public class GameBusinessService {
 
         }
         //n sequence elements need n-1 comparisons
-        if (counter + 1 == transmittedCards.size()) return true;
+        if (counter + 1 == transmittedCards.size()) {
+
+
+            transmittedCards.forEach(card -> tempRow.add(card));
+
+            //Add together main ranks of all the cards
+            int allranks = calculateCombinationScore(tempRow);
+
+
+            Combination tempcomb = createCombination(tempRow, CombinationType.ROW, allranks, player);
+
+            player.getGame().setCurrentCombination(tempcomb);
+
+
+            return true;
+        }
 
         return false;
     }
@@ -381,8 +450,16 @@ public class GameBusinessService {
         return allranks;
     }
 
-    public boolean isBomb(List<Card> transmittedCards) {
+    public boolean isBomb(List<Card> transmittedCards, long id) {
+
+
         int counter = 0;
+        Player player = playerRepository.findOnePlayerById(id);
+        ArrayList<Card> tempBomb = new ArrayList<>();
+
+
+
+
 
         if (transmittedCards.size() == 4) {
             for (int i = 0; i < transmittedCards.size() - 1; i++) {
@@ -391,7 +468,22 @@ public class GameBusinessService {
                 }
             }
             //n elements of a sequence need n-1 comparisons
-            if (counter + 1 == transmittedCards.size()) return true;
+            if (counter + 1 == transmittedCards.size()) {
+
+
+                transmittedCards.forEach(card -> tempBomb.add(card));
+
+                //Add together main ranks of all the cards
+                int allranks = calculateCombinationScore(tempBomb);
+
+
+                Combination tempcomb = createCombination(tempBomb, CombinationType.BOMB, allranks, player);
+
+                player.getGame().setCurrentCombination(tempcomb);
+
+
+                return true;
+            }
         }
 
         if (transmittedCards.size() >= 5) {
@@ -401,7 +493,21 @@ public class GameBusinessService {
                     counter++;
                 }
             }
-            if (counter + 1 == transmittedCards.size()) return true;
+            if (counter + 1 == transmittedCards.size()) {
+
+                transmittedCards.forEach(card -> tempBomb.add(card));
+
+                //Add together main ranks of all the cards
+                int allranks = calculateCombinationScore(tempBomb);
+
+
+                Combination tempcomb = createCombination(tempBomb, CombinationType.BOMB, allranks, player);
+
+                player.getGame().setCurrentCombination(tempcomb);
+
+
+                return true;
+            }
         }
 
         return false;
