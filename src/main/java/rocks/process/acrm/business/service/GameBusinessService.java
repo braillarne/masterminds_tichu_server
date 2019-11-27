@@ -85,38 +85,12 @@ public class GameBusinessService {
     @Autowired
     private GameRepository gameRepository;
 
-    public Game initializeGame(Game game) {
-        // Game game = gameRepository.findByGameId(id);
-        //Add teams to the players
-        setTeamToPlayer(game);
-        initializeRound(game);
-        return game;
+    public Game getGame(Long id) {
+        return gameRepository.findByGameId(id);
     }
 
-    public void initializeRound(Game game) {
-        List<Card> deck = createDeck();
-        //Distribute cards to different players
-        for (int i = 0; ; i++) {
-            if (i == game.getPlayers().size()) {
-
-                i = 0;
-            }
-
-            game.getPlayers().get(i).addOneCardToHand(deck.get(0));
-
-            deck.remove(0);
-
-
-            if (deck.size() == 0) break;
-
-        }
-
-        //Save everything what was modified
-        game.getPlayers().forEach(p -> playerRepository.save(p));
-
+    public void saveGame(Game game) {
         gameRepository.save(game);
-
-
     }
 
     public Game createGame(Long profileID, String name) {
@@ -132,54 +106,108 @@ public class GameBusinessService {
         return gameRepository.save(tempGame);
     }
 
-    public void passToken(GameHandler gameHandler) {
+    public Game initializeGame(Game game){
+        setTeamToPlayer(game);
+        initializeRound(game);
+        return game;
+    }
 
+    public Game joinGame(Long profileID, Long gameID){
+        Profile profile = profileRepository.findProfileById(profileID);
+        Game game = gameRepository.findByGameId(gameID);
+        Player tempPlayer = createPlayer(profileID, profile.getAvatar(), profile.getUsername(), game);
+
+        List<Player> playerList = game.getPlayers();
+        playerList.add(playerRepository.save(tempPlayer));
+        game.setPlayers(playerList);
+        return gameRepository.save(game);
+    }
+
+    public Game updateGameState(GameHandler gh) throws Exception{
+        Game tempGame = gameRepository.findByGameId(gh.getGameID());
+        if(gh.getGameState().equals(State.RUNNING)||gh.getGameState().equals(State.CLOSED)){
+            try {
+                Player player = playerRepository.findOnePlayerById(gh.getPlayerID());
+                if(player.isHost()){
+                    tempGame.setState(gh.getGameState());
+
+                    tempGame = initializeGame(tempGame);
+
+                    return gameRepository.save(tempGame);
+                }else {
+                    throw new Exception("Need to be host of the game.");
+                }
+            }catch (Exception e){
+
+
+                throw new Exception(e.getMessage());
+            }
+        }else {
+            tempGame.setState(gh.getGameState());
+        }
+        return gameRepository.save(tempGame);
+    }
+
+    public void unregisterFromGame(GameHandler gameHandler) {
+        Game game = gameRepository.findByGameId(gameHandler.getGameID());
+        Player player = playerRepository.findOnePlayerById(gameHandler.getPlayerID());
+
+        if(player.isHost()){
+            if(game.getPlayers().size()>1){
+                Player newHost = game.getPlayers().get(1);
+                newHost.setHost(true);
+                playerRepository.save(newHost);
+                playerRepository.delete(player);
+            }else {
+                playerRepository.delete(player);
+                game.setState(State.CLOSED);
+                gameRepository.save(game);
+            }
+        } else {
+            playerRepository.delete(player);
+        }
+    }
+
+    public void initializeRound(Game game){
+        List<Card> deck = createDeck();
+        //Distribute cards to different players
+        for (int i = 0; ; i++) {
+            if (i == game.getPlayers().size()) {
+
+                i = 0;
+            }
+
+            game.getPlayers().get(i).addOneCardToHand(deck.get(0));
+
+            deck.remove(0);
+
+            if (deck.size() == 0) break;
+
+        }
+        //Save everything what was modified
+        game.getPlayers().forEach(p -> playerRepository.save(p));
+
+        gameRepository.save(game);
+    }
+
+    public void passToken(GameHandler gameHandler){
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
 
         int currentIndex = currentGame.getPlayers().indexOf(currentPlayer);
 
-        ListIterator<Player> iterator = currentGame.getPlayers().listIterator(currentIndex);
+        for(int i = currentIndex; i<currentGame.getPlayers().size();i++) {
+            if(currentGame.getPlayers().get(i+1).getHand()!=null && currentGame.getPlayers().get(i+1).getHand().size()>0){
+                currentGame.getPlayers().get(i).setPlaying(false);
+                currentGame.getPlayers().get(i+1).setPlaying(true);
 
-        iterator.next();
-
-
-        if (iterator.hasNext()) {
-
-
-            if (iterator.next().getHand().size() > 0) {
-
-                iterator.previous();
-                iterator.previous().removePlayToken();
-                playerRepository.save(iterator.next());
-                iterator.next().givePlayToken();
-                playerRepository.save(iterator.previous());
-
-            } else {
-                iterator.next();
-                gameHandler.setPlayerID(iterator.next().getId());
-                passToken(gameHandler);
+                playerRepository.save(currentGame.getPlayers().get(i));
+                playerRepository.save(currentGame.getPlayers().get(i+1));
+                break;
             }
-
-
-        } else {
-
-            iterator.previous().removePlayToken();
-            playerRepository.save(iterator.next());
-
-            for (int i = 0; i < currentGame.getPlayers().size(); i++) {
-                iterator.previous();
+            if(i==currentGame.getPlayers().size()&& !currentGame.getPlayers().get(i).getId().equals(gameHandler.getPlayerID())){
+                i=0;
             }
-
-            if (iterator.next().getHand().size() > 0) {
-                iterator.previous().givePlayToken();
-                playerRepository.save(iterator.next());
-
-            } else {
-                gameHandler.setPlayerID(iterator.next().getId());
-                passToken(gameHandler);
-            }
-
         }
     }
 
@@ -230,79 +258,14 @@ public class GameBusinessService {
         return gameRepository.findAll();
     }
 
-    public void saveGame(Game game) throws Exception {
-        try {
-            gameRepository.save(game);
-        } catch (Exception e) {
-            throw new Exception("Invalid Game.");
-        }
-    }
-
     public boolean verificateStartofGame(Game game) {
 
-        if (game.getPlayers().size() == 4) return true;
+        if(game.getPlayers().size()==4) return true;
 
         return false;
     }
 
-
-    public Game joinGame(Long profileID, Long gameID) {
-        Profile profile = profileRepository.findProfileById(profileID);
-        Game game = gameRepository.findByGameId(gameID);
-        Player tempPlayer = createPlayer(profileID, profile.getAvatar(), profile.getUsername(), game);
-
-        List<Player> playerList = game.getPlayers();
-        playerList.add(playerRepository.save(tempPlayer));
-        game.setPlayers(playerList);
-        return gameRepository.save(game);
-    }
-
-    public Game updateGameState(GameHandler gh) throws Exception {
-        Game tempGame = gameRepository.findByGameId(gh.getGameID());
-        if (gh.getGameState().equals(State.RUNNING) || gh.getGameState().equals(State.CLOSED)) {
-            try {
-                Player player = playerRepository.findOnePlayerById(gh.getPlayerID());
-                if (player.isHost()) {
-                    tempGame.setState(gh.getGameState());
-
-                    tempGame = initializeGame(tempGame);
-
-                    return gameRepository.save(tempGame);
-                } else {
-                    throw new Exception("Need to be host of the game.");
-                }
-            } catch (Exception e) {
-
-
-                throw new Exception(e.getMessage());
-            }
-        } else {
-            tempGame.setState(gh.getGameState());
-        }
-        return gameRepository.save(tempGame);
-    }
-
-    public void unregisterFromGame(GameHandler gameHandler) {
-        Game game = gameRepository.findByGameId(gameHandler.getGameID());
-        Player player = playerRepository.findOnePlayerById(gameHandler.getPlayerID());
-
-        if (player.isHost()) {
-            if (game.getPlayers().size() > 1) {
-                Player newHost = game.getPlayers().get(1);
-                newHost.setHost(true);
-                playerRepository.save(newHost);
-                playerRepository.delete(player);
-            } else {
-                playerRepository.delete(player);
-                game.setState(State.CLOSED);
-                gameRepository.save(game);
-            }
-        } else {
-            playerRepository.delete(player);
-        }
-    }
-
-    public void savePlayer(Player player) throws Exception {
+    public void savePlayer(Player player) {
         playerRepository.save(player);
     }
 
@@ -471,9 +434,7 @@ public class GameBusinessService {
                 && moveHandler.getCards().get(1).getRank() == moveHandler.getCards().get(2).getRank()
                 && moveHandler.getCards().get(3).getRank() == moveHandler.getCards().get(4).getRank()) {
 
-
             createCombinationFromCards(moveHandler);
-
 
             return true;
         }
@@ -576,6 +537,4 @@ public class GameBusinessService {
 
         return false;
     }
-
-
 }
