@@ -21,6 +21,16 @@ public class Game {
     private Combination currentCombination;
     private int maxRound;
     private State state;
+    private int passCounter;
+
+    public int getPassCounter() {
+        return passCounter;
+    }
+
+    public void setPassCounter(int passCounter) {
+        this.passCounter = passCounter;
+    }
+
     public Long getGameId() {
         return gameId;
     }
