@@ -194,6 +194,16 @@ public class GameBusinessService {
         gameRepository.save(game);
     }
 
+    public void pass(GameHandler gameHandler) {
+        Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
+
+        if(currentPlayer.isPlaying()) {
+            currentPlayer.getGame().setPassCounter(currentPlayer.getGame().getPassCounter() + 1);
+
+            passToken(gameHandler);
+        }
+    }
+
     public void passToken(GameHandler gameHandler){
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());

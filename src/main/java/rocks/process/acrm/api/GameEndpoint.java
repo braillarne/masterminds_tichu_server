@@ -86,4 +86,13 @@ public class GameEndpoint {
         return newGame;
     }
 
+    @PutMapping(path = "/pass", consumes = "application/json", produces = "application/json")
+    public void passTurn(@RequestBody GameHandler gameHandler) throws Exception{
+        try {
+            gameBusinessService.pass(gameHandler);
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
+        }
+    }
+
 }
