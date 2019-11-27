@@ -12,5 +12,6 @@ import java.util.List;
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findAllByPlayableCombinations(Combination combination);
-    List<Card> findAllByPlayer(Player p);
+    List<Card> findAllByPlayerAssociatedToHand(Player p);
+    List<Card> findAllByPlayerAssociatedToWon(Player p);
 }

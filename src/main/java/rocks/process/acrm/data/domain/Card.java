@@ -18,8 +18,11 @@ public class Card {
     private static final int MAX_RANK = 14;
     private static final int MIN_RANK = 2;
     @OneToOne
-    @JsonBackReference(value = "card-player")
-    private Player player;
+    @JsonBackReference(value = "card-playerAssociatedToHand")
+    private Player playerAssociatedToHand;
+    @OneToOne
+    @JsonBackReference(value = "card-playerAssociatedToWon")
+    private Player playerAssociatedToWon;
     @ManyToMany
     @JsonBackReference(value = "card-combination")
     private List<Combination> playableCombinations;
@@ -40,12 +43,20 @@ public class Card {
         return MIN_RANK;
     }
 
-    public Player getPlayer() {
-        return player;
+    public Player getPlayerAssociatedToHand() {
+        return playerAssociatedToHand;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public void setPlayerAssociatedToHand(Player player) {
+        this.playerAssociatedToHand = player;
+    }
+
+    public Player getPlayerAssociatedToWon() {
+        return playerAssociatedToWon;
+    }
+
+    public void setPlayerAssociatedToWon(Player player) {
+        this.playerAssociatedToWon = player;
     }
 
     public List<Combination> getPlayableCombinations() {

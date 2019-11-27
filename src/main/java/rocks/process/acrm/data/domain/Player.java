@@ -20,8 +20,10 @@ public class Player {
     @OneToOne
     @JsonBackReference(value = "player-team")
     private Team team;
-    @ManyToMany(mappedBy = "player")
+    @ManyToMany(mappedBy = "playerAssociatedToHand")
     private List<Card> hand;
+    @ManyToMany(mappedBy = "playerAssociatedToWon")
+    private List<Card> wonCards;
     @ManyToMany(mappedBy = "player")
     private List<Combination> playableCombinations;
     private boolean isPlaying;
@@ -99,6 +101,14 @@ public class Player {
 
     public void setHand(List<Card> hand) {
         this.hand = hand;
+    }
+
+    public List<Card> getWonCards() {
+        return wonCards;
+    }
+
+    public void setWonCards(List<Card> wonCards) {
+        this.wonCards = wonCards;
     }
 
     public void setPlaying(boolean playing) {
