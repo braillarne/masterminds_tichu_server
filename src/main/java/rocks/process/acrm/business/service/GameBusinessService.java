@@ -15,6 +15,10 @@ public class GameBusinessService {
     @Autowired
     private CardRepository cardRepository;
 
+    public void saveCard(Card card) {
+        cardRepository.save(card);
+    }
+
     @Autowired
     private CombinationRepository combinationRepository;
 
@@ -322,8 +326,6 @@ public class GameBusinessService {
                 break;
 
         }
-
-
     }
 
     public Boolean createCombinationFromCards(MoveHandler moveHandler) {
@@ -347,7 +349,6 @@ public class GameBusinessService {
             gameHandler.setPlayerID(currentPlayer.getId());
             gameHandler.setGameID(currentGame.getGameId());
             passToken(gameHandler);
-
 
             return true;
         }
