@@ -258,6 +258,59 @@ public class GameBusinessService {
 
     }
 
+    public boolean isEndOfGame(GameHandler gameHandler){
+        boolean isTheEnd = true;
+
+        Game currentGame = gameRepository.getOne(gameHandler.getGameID());
+        List<Team> teams = currentGame.getTeams();
+        List<Team> teamsWithMoreThan1000pts = new ArrayList<>();
+
+        for (Team t:teams ) {
+            if(t.getScore()>=1000){
+                teamsWithMoreThan1000pts.add(t);
+            }
+        }
+
+        for(int i=0; i<teamsWithMoreThan1000pts.size()-1;i++){
+            for(int j=i+1; j<teamsWithMoreThan1000pts.size();j++){
+                if(teamsWithMoreThan1000pts.get(i).getScore()==teamsWithMoreThan1000pts.get(j).getScore()){
+                    isTheEnd=false;
+                    break;
+                }
+            }
+        }
+
+        if(teamsWithMoreThan1000pts.size()<1){
+            isTheEnd = false;
+        }
+
+        return isTheEnd;
+    }
+
+    private Game endOfGame(Game game) {
+        Game gameToBeReturned = null;
+
+        Team winners = null;
+        int winningScore = 0;
+
+        for (Team t:game.getTeams()) {
+            if(t.getScore()>winningScore){
+                winningScore = t.getScore();
+                winners = t;
+            }
+        }
+
+        game.setState(State.CLOSED);
+        game.setEndOfTheGameMessage("Team " + winners.getTeamId() + " wons with " + winners.getScore() + "pts.");
+        gameToBeReturned = gameRepository.save(game);
+
+        gameRepository.delete(game);
+
+        return gameToBeReturned;
+    }
+
+
+
     @Autowired
     private TeamRepository teamRepository;
 
@@ -552,10 +605,6 @@ public class GameBusinessService {
             //n elements of a sequence need n-1 comparisons
             if (counter + 1 == moveHandler.getCards().size()) {
 
-
-                createCombinationFromCards(moveHandler);
-
-
                 return true;
             }
         }
@@ -568,10 +617,6 @@ public class GameBusinessService {
                 }
             }
             if (counter + 1 == moveHandler.getCards().size()) {
-
-
-                createCombinationFromCards(moveHandler);
-
 
                 return true;
             }
