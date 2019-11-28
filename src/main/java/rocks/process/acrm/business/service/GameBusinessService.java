@@ -240,6 +240,24 @@ public class GameBusinessService {
         }
     }
 
+    public boolean isEndTrick(GameHandler gameHandler) {
+
+        Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
+        Game currentGame = gameRepository.getOne(gameHandler.getGameID());
+        Player currentLeader = currentGame.getCurrentCombination().getPlayer();
+
+        if (currentGame.getPassCounter() == 3) {
+
+            //currentLeader.setWonCards();
+
+
+            return true;
+        }
+
+        return false;
+
+    }
+
     @Autowired
     private TeamRepository teamRepository;
 
