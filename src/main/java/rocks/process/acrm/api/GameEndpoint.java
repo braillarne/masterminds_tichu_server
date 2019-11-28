@@ -86,6 +86,18 @@ public class GameEndpoint {
         return newGame;
     }
 
+    @PutMapping(path = "/push", consumes = "application/json", produces = "application/json")
+    public Player pushCardToPlayer(@RequestBody PushHandler pushHandler) throws Exception {
+        Player player = null;
+        try {
+            player = gameBusinessService.pushCard(pushHandler);
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
+        }
+
+        return player;
+    }
+
     @PutMapping(path = "/pass", consumes = "application/json", produces = "application/json")
     public void passTurn(@RequestBody GameHandler gameHandler) throws Exception{
         try {

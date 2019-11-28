@@ -194,6 +194,21 @@ public class GameBusinessService {
         gameRepository.save(game);
     }
 
+    public Player pushCard(PushHandler pushHandler) {
+        Card pushedCard = cardRepository.getOne(pushHandler.getCardID());
+        Player sender = playerRepository.getOne(pushHandler.getSenderID());
+        Player receiver = playerRepository.getOne(pushHandler.getReceiverID());
+
+        receiver.setReceivedCardCounter(receiver.getReceivedCardCounter()+1);
+        receiver.getHand().add(pushedCard);
+
+        sender.getHand().remove(pushedCard);
+
+        playerRepository.save(receiver);
+
+        return playerRepository.save(sender);
+    }
+
     public void pass(GameHandler gameHandler) {
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
 
@@ -295,6 +310,7 @@ public class GameBusinessService {
         return tempPlayer;
     }
 
+    // TODO: delete method if never used
     public Player findOnePlayerByName(String name) {
         return playerRepository.findByName(name);
     }
