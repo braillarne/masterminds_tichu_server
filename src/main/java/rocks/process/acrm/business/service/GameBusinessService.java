@@ -299,46 +299,66 @@ public class GameBusinessService {
         return playerRepository.findByName(name);
     }
 
-    public void determineCombination(MoveHandler moveHandler) {
+    public Game determineCombination(MoveHandler moveHandler) {
 
         Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(currentPlayer.getGame().getId());
         String currentCombination = currentGame.getCurrentCombination().getCombinationType().toString();
 
+        boolean isValid = false;
 
         switch (currentCombination) {
 
             case "CombinationType.SINGLE":
-                isSingle(moveHandler);
+                if(isSingle(moveHandler)){
+                    isValid=true;
+                }
                 break;
 
             case "CombinationType.PAIR":
-                isPair(moveHandler);
+                if(isPair(moveHandler)){
+                    isValid=true;
+                }
                 break;
 
             case "CombinationType.RUNPAIR":
-                isRunningPair(moveHandler);
+                if(isRunningPair(moveHandler)){
+                    isValid=true;
+                }
                 break;
 
             case "CombinationType.TRIPLE":
-                isTriple(moveHandler);
+                if(isTriple(moveHandler)){
+                    isValid=true;
+                }
                 break;
 
             case "CombinationType.FULLHOUSE":
-                isFullHouse(moveHandler);
+                if(isFullHouse(moveHandler)){
+                    isValid=true;
+                }
 
             case "CombinationType.ROW":
-                isRow(moveHandler);
+                if(isRow(moveHandler)) {
+                    isValid=true;
+                }
                 break;
 
             case "CombinationType.BOMB":
-                isBomb(moveHandler);
+                if(isBomb(moveHandler)){
+                    isValid=true;
+                }
                 break;
+        }
 
+        if(isValid){
+            return createCombinationFromCards(moveHandler);
+        } else {
+            return currentGame;
         }
     }
 
-    public Boolean createCombinationFromCards(MoveHandler moveHandler) {
+    public Game createCombinationFromCards(MoveHandler moveHandler) {
 
         Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(currentPlayer.getGame().getId());
@@ -361,19 +381,15 @@ public class GameBusinessService {
             passToken(gameHandler);
             currentGame.setPassCounter(0);
             gameRepository.save(currentGame);
-            return true;
         }
 
-        return false;
-
+        return currentGame;
     }
 
     public Boolean isSingle(MoveHandler moveHandler) {
         Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
 
         if (moveHandler.getCards().size() == 1) {
-
-            createCombinationFromCards(moveHandler);
             return true;
         }
 
@@ -383,11 +399,6 @@ public class GameBusinessService {
     public Boolean isPair(MoveHandler moveHandler) {
 
         if (moveHandler.getCards().size() == 2 && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()) {
-
-
-            createCombinationFromCards(moveHandler);
-
-
             return true;
 
 
@@ -398,10 +409,6 @@ public class GameBusinessService {
         if (moveHandler.getCards().size() == 3
                 && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()
                 && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(2).getRank()) {
-
-
-            createCombinationFromCards(moveHandler);
-
 
             return true;
 
@@ -426,10 +433,6 @@ public class GameBusinessService {
         //n pairs take n-1 comparisons. We determine n pairs by dividing with two.
         if (counter == moveHandler.getCards().size() / 2 - 1) {
 
-
-            createCombinationFromCards(moveHandler);
-
-
             return true;
         }
         return false;
@@ -446,8 +449,6 @@ public class GameBusinessService {
                 && moveHandler.getCards().get(1).getRank() == moveHandler.getCards().get(2).getRank()
                 && moveHandler.getCards().get(3).getRank() == moveHandler.getCards().get(4).getRank()) {
 
-            createCombinationFromCards(moveHandler);
-
             return true;
         }
 
@@ -456,10 +457,6 @@ public class GameBusinessService {
         if (moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()
                 && moveHandler.getCards().get(2).getRank() == moveHandler.getCards().get(3).getRank()
                 && moveHandler.getCards().get(3).getRank() == moveHandler.getCards().get(4).getRank()) {
-
-
-            createCombinationFromCards(moveHandler);
-
 
             return true;
         }
@@ -484,10 +481,6 @@ public class GameBusinessService {
         }
         //n sequence elements need n-1 comparisons
         if (counter + 1 == moveHandler.getCards().size()) {
-
-
-            createCombinationFromCards(moveHandler);
-
 
             return true;
         }
