@@ -15,7 +15,7 @@ public class Game {
     private List<Player> players;
     @ManyToMany
     private List<Team> teams;
-    private int currentRound;
+    private int currentScore;
     @OneToOne
     @JsonBackReference(value = "combination-game")
     private Combination currentCombination;
@@ -79,12 +79,12 @@ public class Game {
         return gameId;
     }
 
-    public int getCurrentRound() {
-        return currentRound;
+    public int getCurrentScore() {
+        return currentScore;
     }
 
-    public void setCurrentRound(int currentRound) {
-        this.currentRound = currentRound;
+    public void setCurrentScore(int currentScore) {
+        this.currentScore = currentScore;
     }
 
     public Combination getCurrentCombination() {
