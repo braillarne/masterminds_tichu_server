@@ -19,9 +19,28 @@ public class Game {
     @OneToOne
     @JsonBackReference(value = "combination-game")
     private Combination currentCombination;
+    @ManyToMany
+    private List<Card> playedCards;
     private int maxRound;
     private State state;
     private int passCounter;
+    private String endOfTheGameMessage;
+
+    public String getEndOfTheGameMessage() {
+        return endOfTheGameMessage;
+    }
+
+    public List<Card> getPlayedCards() {
+        return playedCards;
+    }
+
+    public void setPlayedCards(List<Card> playedCards) {
+        this.playedCards = playedCards;
+    }
+
+    public void setEndOfTheGameMessage(String endOfTheGameMessage) {
+        this.endOfTheGameMessage = endOfTheGameMessage;
+    }
 
     public int getPassCounter() {
         return passCounter;

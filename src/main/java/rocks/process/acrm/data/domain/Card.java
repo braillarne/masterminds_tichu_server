@@ -26,6 +26,13 @@ public class Card {
     @ManyToMany
     @JsonBackReference(value = "card-combination")
     private List<Combination> playableCombinations;
+    @OneToOne
+    @JsonBackReference(value = "card-game")
+    private Game game;
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 
     public Long getId() {
         return id;
