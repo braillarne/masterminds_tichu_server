@@ -359,7 +359,8 @@ public class GameBusinessService {
             gameHandler.setPlayerID(currentPlayer.getId());
             gameHandler.setGameID(currentGame.getGameId());
             passToken(gameHandler);
-
+            currentGame.setPassCounter(0);
+            gameRepository.save(currentGame);
             return true;
         }
 
