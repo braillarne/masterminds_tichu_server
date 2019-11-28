@@ -30,6 +30,15 @@ public class Player {
     @OneToOne
     @JsonBackReference(value = "player-game")
     private Game game;
+    private int receivedCardCounter;
+
+    public int getReceivedCardCounter() {
+        return receivedCardCounter;
+    }
+
+    public void setReceivedCardCounter(int receivedCardCounter) {
+        this.receivedCardCounter = receivedCardCounter;
+    }
 
     public Long getProfileID() {
         return profileID;
