@@ -337,52 +337,55 @@ public class GameBusinessService {
 
         Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(currentPlayer.getGame().getId());
-        String currentCombination = currentGame.getCurrentCombination().getCombinationType().toString();
-
         boolean isValid = false;
 
-        switch (currentCombination) {
+        if(currentPlayer.isPlaying()) {
 
-            case "CombinationType.SINGLE":
-                if(isSingle(moveHandler)){
-                    isValid=true;
-                }
-                break;
+            String currentCombination = currentGame.getCurrentCombination().getCombinationType().toString();
 
-            case "CombinationType.PAIR":
-                if(isPair(moveHandler)){
-                    isValid=true;
-                }
-                break;
+            switch (currentCombination) {
 
-            case "CombinationType.RUNPAIR":
-                if(isRunningPair(moveHandler)){
-                    isValid=true;
-                }
-                break;
+                case "CombinationType.SINGLE":
+                    if (isSingle(moveHandler)) {
+                        isValid = true;
+                    }
+                    break;
 
-            case "CombinationType.TRIPLE":
-                if(isTriple(moveHandler)){
-                    isValid=true;
-                }
-                break;
+                case "CombinationType.PAIR":
+                    if (isPair(moveHandler)) {
+                        isValid = true;
+                    }
+                    break;
 
-            case "CombinationType.FULLHOUSE":
-                if(isFullHouse(moveHandler)){
-                    isValid=true;
-                }
+                case "CombinationType.RUNPAIR":
+                    if (isRunningPair(moveHandler)) {
+                        isValid = true;
+                    }
+                    break;
 
-            case "CombinationType.ROW":
-                if(isRow(moveHandler)) {
-                    isValid=true;
-                }
-                break;
+                case "CombinationType.TRIPLE":
+                    if (isTriple(moveHandler)) {
+                        isValid = true;
+                    }
+                    break;
 
-            case "CombinationType.BOMB":
-                if(isBomb(moveHandler)){
-                    isValid=true;
-                }
-                break;
+                case "CombinationType.FULLHOUSE":
+                    if (isFullHouse(moveHandler)) {
+                        isValid = true;
+                    }
+
+                case "CombinationType.ROW":
+                    if (isRow(moveHandler)) {
+                        isValid = true;
+                    }
+                    break;
+
+                case "CombinationType.BOMB":
+                    if (isBomb(moveHandler)) {
+                        isValid = true;
+                    }
+                    break;
+            }
         }
 
         if(isValid){
