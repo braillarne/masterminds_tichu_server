@@ -471,6 +471,9 @@ public class GameBusinessService {
             passToken(gameHandler);
             currentGame.setPassCounter(0);
             gameRepository.save(currentGame);
+
+            isEndOfTrick(gameHandler);
+            isEndOfRound(gameHandler);
         }
 
         return currentGame;
