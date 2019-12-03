@@ -240,21 +240,150 @@ public class GameBusinessService {
         }
     }
 
-    public boolean isEndTrick(GameHandler gameHandler) {
+    public boolean isEndOfTrick(GameHandler gameHandler) {
 
-        Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
-        Player currentLeader = currentGame.getCurrentCombination().getPlayer();
 
         if (currentGame.getPassCounter() == 3) {
 
-            //currentLeader.setWonCards();
+
+            EndOfTrick(gameHandler);
+
 
 
             return true;
         }
 
         return false;
+
+    }
+
+    public void EndOfTrick(GameHandler gameHandler){
+
+        Game currentGame = gameRepository.getOne(gameHandler.getGameID());
+        Player currentLeader = currentGame.getCurrentCombination().getPlayer();
+
+
+        currentLeader.setWonCards(currentGame.getPlayedCards());
+
+        if(currentLeader.getHand().size()==0){
+
+            currentLeader.setWonCards(currentGame.getPlayedCards());
+            passToken(gameHandler);
+
+
+        }else currentLeader.givePlayToken();
+
+
+        playerRepository.save(currentLeader);
+
+        currentGame.getPlayedCards().clear();
+        gameRepository.save(currentGame);
+
+
+    }
+
+    public boolean isEndOfRound(GameHandler gameHandler){
+
+        Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
+        Game currentGame = gameRepository.getOne(gameHandler.getGameID());
+        ArrayList<Player> loosers = new ArrayList<>();
+
+
+
+        for(int i = 0;i<currentGame.getPlayers().size();i++){
+
+            if(currentGame.getPlayers().get(i).getHand().size()>0){
+
+                loosers.add(currentGame.getPlayers().get(i));
+
+            }
+
+
+
+        }
+
+        if (loosers.size()==1){
+
+            EndOfRound(gameHandler,loosers);
+
+
+        }
+
+
+        return false;
+    }
+
+    public void EndOfRound(GameHandler gameHandler, ArrayList<Player> loosers){
+
+        Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
+        Game currentGame = gameRepository.getOne(gameHandler.getGameID());
+        Player looser = loosers.get(0);
+        Player winner = playerRepository.findOnePlayerById(currentGame.getWinnerID());
+        Team looserteam = looser.getTeam();
+
+        //Give won tricks to winner
+
+        for(Card c:looser.getHand()){
+
+            winner.getWonCards().add(c);
+            playerRepository.save(winner);
+        }
+
+
+        //Give won score from hand to opponent team
+        int handscorelooser = scoreCards(looser.getHand());
+
+
+
+        for(Team t:currentGame.getTeams()){
+
+            if (t!=looser.getTeam()){
+                t.setScore(handscorelooser);
+                teamRepository.save(t);
+            }
+        }
+
+
+        //Score the round
+        for(Player p:currentGame.getPlayers()){
+
+            int wonScoreFromTrick = scoreCards(p.getWonCards());
+            p.getTeam().setScore(wonScoreFromTrick);
+            teamRepository.save(p.getTeam());
+
+        }
+
+        if(isEndOfGame(gameHandler)==false){
+
+            initializeRound(currentGame);
+        }
+
+
+
+
+
+
+
+
+    }
+
+    public int scoreCards(List<Card> cards){
+
+        int score = 0;
+
+        for(Card c:cards){
+
+            if(c.getRank()==10||c.getRank()==13)score = score + 10;
+
+            if(c.getRank()==5) score = score +5;
+
+
+
+        }
+
+        return score;
+
 
     }
 
@@ -459,11 +588,17 @@ public class GameBusinessService {
         if (allranks > currentCombination.getMainRank()) {
 
 
+
+
             Combination tempcomb = createCombination(moveHandler.getCards(), currentCombination.getCombinationType(), allranks, currentPlayer);
             combinationRepository.save(tempcomb);
 
             currentGame.setCurrentCombination(tempcomb);
             gameRepository.save(currentGame);
+
+            //Check if player of playedCombination is the winner
+            isWinner(currentPlayer,currentGame);
+
 
             GameHandler gameHandler = new GameHandler();
             gameHandler.setPlayerID(currentPlayer.getId());
@@ -477,6 +612,20 @@ public class GameBusinessService {
         }
 
         return currentGame;
+    }
+
+    public void isWinner(Player potentialWinner, Game currentGame){
+
+        if(potentialWinner.getHand().size()==0&&currentGame.getWinnerID()==null){
+
+            currentGame.setWinnerID(potentialWinner.getId());
+
+
+
+        }
+
+
+
     }
 
     public Boolean isSingle(MoveHandler moveHandler) {
