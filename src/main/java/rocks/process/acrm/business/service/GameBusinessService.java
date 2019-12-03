@@ -175,6 +175,19 @@ public class GameBusinessService {
 
     public Game initializeRound(Game game){
         List<Card> deck = createDeck();
+
+        //Clear everything from previous game
+        game.setCurrentCombination(null);
+        game.setWinnerID(null);
+        game.getPlayedCards().clear();
+        game.setPassCounter(0);
+
+        for(Player p: game.getPlayers()){
+
+            p.getWonCards().clear();
+
+        }
+
         //Distribute cards to different players
         for (int i = 0; ; i++) {
             if (i == game.getPlayers().size()) {
@@ -271,7 +284,6 @@ public class GameBusinessService {
 
         if(currentLeader.getHand().size()==0){
 
-            currentLeader.setWonCards(currentGame.getPlayedCards());
             passToken(gameHandler);
 
 
