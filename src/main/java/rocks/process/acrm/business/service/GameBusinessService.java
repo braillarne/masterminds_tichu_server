@@ -332,7 +332,15 @@ public class GameBusinessService {
 
             endOfRound(gameHandler,loosers);
 
+        } else if (loosers.size()==2&&loosers.get(0).getTeam()==loosers.get(1).getTeam()){
+            loosers.get(0).getTeam().setScore(loosers.get(0).getTeam().getScore()+200);
+            currentPlayer.setPlaying(false);
+            currentGame.getCurrentCombination().getPlayer().setPlaying(true);
 
+            playerRepository.save(currentPlayer);
+            playerRepository.save(currentGame.getCurrentCombination().getPlayer());
+
+            initializeRound(currentGame);
         }
 
 
@@ -342,9 +350,12 @@ public class GameBusinessService {
     public void endOfRound(GameHandler gameHandler, ArrayList<Player> loosers){
 
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
+        currentPlayer.setPlaying(false);
+        playerRepository.save(currentPlayer);
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
         Player looser = loosers.get(0);
         Player winner = playerRepository.findOnePlayerById(currentGame.getWinnerID());
+        winner.setPlaying(true);
         Team looserteam = looser.getTeam();
 
         //Give won tricks to winner
@@ -379,7 +390,7 @@ public class GameBusinessService {
 
         }
 
-        if(isEndOfGame(gameHandler)==false){
+        if(!isEndOfGame(gameHandler)){
 
             initializeRound(currentGame);
         }
