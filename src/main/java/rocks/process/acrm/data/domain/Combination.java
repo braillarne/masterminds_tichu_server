@@ -27,9 +27,6 @@ public class Combination {
         this.mainRank = mainRank;
     }
 
-    public List<Card> getCards() {
-        return cards;
-    }
     public CombinationType getCombinationType() {
         return combinationType;
     }

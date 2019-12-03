@@ -19,6 +19,15 @@ public class MoveHandler {
         this.cards = cards;
     }
 
+    public CombinationType getCombinationType() {
+        return combinationType;
+    }
+
+    public void setCombinationType(CombinationType combinationType) {
+        this.combinationType = combinationType;
+    }
+
     private Long playerID;
     private List<Card> cards;
+    private CombinationType combinationType;
 }

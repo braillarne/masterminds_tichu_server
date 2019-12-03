@@ -161,6 +161,7 @@ public class GameBusinessService {
             if(game.getPlayers().size()>1){
                 Player newHost = game.getPlayers().get(1);
                 newHost.setHost(true);
+                newHost.setPlaying(true);
                 playerRepository.save(newHost);
                 playerRepository.delete(player);
             }else {
@@ -231,7 +232,13 @@ public class GameBusinessService {
         if(currentPlayer.isPlaying()) {
             currentPlayer.getGame().setPassCounter(currentPlayer.getGame().getPassCounter() + 1);
 
-            passToken(gameHandler);
+            gameHandler.setGameID(currentPlayer.getGame().getId());
+            if(!isEndOfTrick(gameHandler)){
+
+                passToken(gameHandler);
+            } else {
+                endOfTrick(gameHandler);
+            }
         }
     }
 
@@ -263,7 +270,7 @@ public class GameBusinessService {
         if (currentGame.getPassCounter() == 3) {
 
 
-            EndOfTrick(gameHandler);
+            endOfTrick(gameHandler);
 
 
 
@@ -274,7 +281,7 @@ public class GameBusinessService {
 
     }
 
-    public void EndOfTrick(GameHandler gameHandler){
+    public void endOfTrick(GameHandler gameHandler){
 
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
         Player currentLeader = currentGame.getCurrentCombination().getPlayer();
@@ -320,7 +327,7 @@ public class GameBusinessService {
 
         if (loosers.size()==1){
 
-            EndOfRound(gameHandler,loosers);
+            endOfRound(gameHandler,loosers);
 
 
         }
@@ -329,7 +336,7 @@ public class GameBusinessService {
         return false;
     }
 
-    public void EndOfRound(GameHandler gameHandler, ArrayList<Player> loosers){
+    public void endOfRound(GameHandler gameHandler, ArrayList<Player> loosers){
 
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
@@ -525,6 +532,7 @@ public class GameBusinessService {
         tempPlayer.setName(name);
         // Checks if there is already players involved. If not then the created player becomes the owner
         tempPlayer.setHost(game.getPlayers() == null);
+        tempPlayer.setPlaying(game.getPlayers() == null);
         tempPlayer.setGame(game);
         return tempPlayer;
     }
@@ -542,51 +550,59 @@ public class GameBusinessService {
 
         if(currentPlayer.isPlaying()) {
 
-            String currentCombination = currentGame.getCurrentCombination().getCombinationType().toString();
+            String currentCombination = null;
+            if(moveHandler.getCombinationType()!=null){
+
+                currentCombination = moveHandler.getCombinationType().toString();
+            } else {
+
+                currentCombination = currentGame.getCurrentCombination().getCombinationType().toString();
+            }
 
             switch (currentCombination) {
 
-                case "CombinationType.SINGLE":
+                case "SINGLE":
                     if (isSingle(moveHandler)) {
                         isValid = true;
                     }
                     break;
 
-                case "CombinationType.PAIR":
+                case "PAIR":
                     if (isPair(moveHandler)) {
                         isValid = true;
                     }
                     break;
 
-                case "CombinationType.RUNPAIR":
+                case "RUNPAIR":
                     if (isRunningPair(moveHandler)) {
                         isValid = true;
                     }
                     break;
 
-                case "CombinationType.TRIPLE":
+                case "TRIPLE":
                     if (isTriple(moveHandler)) {
                         isValid = true;
                     }
                     break;
 
-                case "CombinationType.FULLHOUSE":
+                case "FULLHOUSE":
                     if (isFullHouse(moveHandler)) {
                         isValid = true;
                     }
 
-                case "CombinationType.ROW":
+                case "ROW":
                     if (isRow(moveHandler)) {
                         isValid = true;
                     }
                     break;
 
-                case "CombinationType.BOMB":
+                case "BOMB":
                     if (isBomb(moveHandler)) {
                         isValid = true;
                     }
                     break;
             }
+
         }
 
         if(isValid){
@@ -600,20 +616,26 @@ public class GameBusinessService {
 
         Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(currentPlayer.getGame().getId());
-        Combination currentCombination = currentGame.getCurrentCombination();
 
         int allranks = calculateCombinationScore(moveHandler.getCards());
 
-        if (allranks > currentCombination.getMainRank()) {
+        if (currentGame.getCurrentCombination()==null||allranks > currentGame.getCurrentCombination().getMainRank()) {
+            Combination tempcomb = null;
 
-
-
-
-            Combination tempcomb = createCombination(moveHandler.getCards(), currentCombination.getCombinationType(), allranks, currentPlayer);
+            if(currentGame.getCurrentCombination()==null){
+                tempcomb = createCombination(moveHandler.getCards(), moveHandler.getCombinationType(), allranks, currentPlayer);
+            } else {
+                Combination currentCombination = currentGame.getCurrentCombination();
+                tempcomb = createCombination(moveHandler.getCards(), currentCombination.getCombinationType(), allranks, currentPlayer);
+            }
             combinationRepository.save(tempcomb);
 
             currentGame.setCurrentCombination(tempcomb);
+            currentGame.getPlayedCards().addAll(moveHandler.getCards());
             gameRepository.save(currentGame);
+
+            currentPlayer.getHand().removeAll(moveHandler.getCards());
+            playerRepository.save(currentPlayer);
 
             //Check if player of playedCombination is the winner
             isWinner(currentPlayer,currentGame);
@@ -638,6 +660,7 @@ public class GameBusinessService {
         if(potentialWinner.getHand().size()==0&&currentGame.getWinnerID()==null){
 
             currentGame.setWinnerID(potentialWinner.getId());
+            gameRepository.save(currentGame);
 
 
 

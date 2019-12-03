@@ -18,4 +18,8 @@ public class PlayerService {
     public Player findOnePlayerByName(String name){
         return playerRepository.findByName(name);
     }
+
+    public Player findOneByID(Long id){
+        return playerRepository.findOnePlayerById(id);
+    }
 }

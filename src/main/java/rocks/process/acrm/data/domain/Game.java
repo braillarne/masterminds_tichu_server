@@ -17,7 +17,6 @@ public class Game {
     private List<Team> teams;
     private int currentScore;
     @ManyToOne
-    @JsonBackReference(value = "combination-game")
     private Combination currentCombination;
     @ManyToMany
     private List<Card> playedCards;

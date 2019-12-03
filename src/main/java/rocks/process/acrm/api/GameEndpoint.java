@@ -86,7 +86,7 @@ public class GameEndpoint {
         return newGame;
     }
 
-    @PutMapping(path = "/push", consumes = "application/json", produces = "application/json")
+    @PutMapping(path = "/game/push", consumes = "application/json", produces = "application/json")
     public Player pushCardToPlayer(@RequestBody PushHandler pushHandler) throws Exception {
         Player player = null;
         try {
