@@ -111,9 +111,8 @@ public class GameBusinessService {
     }
 
     public Game initializeGame(Game game){
-        setTeamToPlayer(game);
-        initializeRound(game);
-        return game;
+
+        return initializeRound(setTeamToPlayer(game));
     }
 
     public Game joinGame(Long profileID, Long gameID){
@@ -135,7 +134,9 @@ public class GameBusinessService {
                 if(player.isHost()){
                     tempGame.setState(gh.getGameState());
 
-                    tempGame = initializeGame(tempGame);
+                    if(gh.getGameState().equals(State.RUNNING)) {
+                        tempGame = initializeGame(tempGame);
+                    }
 
                     return gameRepository.save(tempGame);
                 }else {
@@ -172,7 +173,7 @@ public class GameBusinessService {
         }
     }
 
-    public void initializeRound(Game game){
+    public Game initializeRound(Game game){
         List<Card> deck = createDeck();
         //Distribute cards to different players
         for (int i = 0; ; i++) {
@@ -182,16 +183,18 @@ public class GameBusinessService {
             }
 
             game.getPlayers().get(i).addOneCardToHand(deck.get(0));
+            playerRepository.save(game.getPlayers().get(i));
 
             deck.remove(0);
 
             if (deck.size() == 0) break;
 
         }
-        //Save everything what was modified
-        game.getPlayers().forEach(p -> playerRepository.save(p));
 
-        gameRepository.save(game);
+        //Save everything what was modified
+        //game.getPlayers().forEach(p -> playerRepository.save(p));
+
+        return gameRepository.save(game);
     }
 
     public Player pushCard(PushHandler pushHandler) {
@@ -443,10 +446,7 @@ public class GameBusinessService {
     @Autowired
     private TeamRepository teamRepository;
 
-
-    public void setTeamToPlayer(Game game) {
-
-        Player tempplayer;
+    public Game setTeamToPlayer(Game game) {
 
         Team team1 = new Team();
         Team team2 = new Team();
@@ -457,23 +457,30 @@ public class GameBusinessService {
         teamRepository.save(team1);
         teamRepository.save(team2);
 
-        //Add players to team1
-        tempplayer = game.getPlayers().get(0);
-        tempplayer.setTeam(team1);
-        playerRepository.save(tempplayer);
+        game.getPlayers().get(0).setTeam(team2);
+        game.getPlayers().get(1).setTeam(team1);
+        game.getPlayers().get(2).setTeam(team2);
+        game.getPlayers().get(3).setTeam(team1);
 
-        tempplayer = game.getPlayers().get(1);
-        tempplayer.setTeam(team1);
-        playerRepository.save(tempplayer);
+        for (Player p : game.getPlayers()) { playerRepository.save(p); }
+        gameRepository.save(game);
 
-        //Add players to team 2
-        tempplayer = game.getPlayers().get(2);
-        tempplayer.setTeam(team2);
-        playerRepository.save(tempplayer);
+        List<Player> playersToBeAdded = new ArrayList<>();
+        playersToBeAdded.add(game.getPlayers().get(0));
+        playersToBeAdded.add(game.getPlayers().get(2));
+        team2.setPlayers(playersToBeAdded);
 
-        tempplayer = game.getPlayers().get(3);
-        tempplayer.setTeam(team1);
-        playerRepository.save(tempplayer);
+        playersToBeAdded.clear();
+        playersToBeAdded.add(game.getPlayers().get(1));
+        playersToBeAdded.add(game.getPlayers().get(3));
+        team1.setPlayers(playersToBeAdded);
+
+        game.getTeams().add(team1);
+        game.getTeams().add(team2);
+
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+        return  gameRepository.save(game);
     }
 
 

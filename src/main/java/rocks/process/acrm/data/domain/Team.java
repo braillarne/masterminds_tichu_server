@@ -3,6 +3,7 @@ package rocks.process.acrm.data.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Team {
@@ -26,7 +27,14 @@ public class Team {
     @GeneratedValue
     private Long teamId;
     private int score;
-    @OneToOne
+    @ManyToMany
+    private List<Player> players;
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    @ManyToOne
     @JsonBackReference(value = "team-game")
     private Game game;
 }

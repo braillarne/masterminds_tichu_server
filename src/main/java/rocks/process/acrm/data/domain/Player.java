@@ -17,17 +17,16 @@ public class Player {
     private String name;
     //@NotEmpty
     private boolean isHost;
-    @OneToOne
-    @JsonBackReference(value = "player-team")
+    @ManyToOne
     private Team team;
-    @ManyToMany(mappedBy = "playerAssociatedToHand")
+    @ManyToMany
     private List<Card> hand;
-    @ManyToMany(mappedBy = "playerAssociatedToWon")
+    @ManyToMany
     private List<Card> wonCards;
-    @ManyToMany(mappedBy = "player")
+    @ManyToMany
     private List<Combination> playableCombinations;
     private boolean isPlaying;
-    @OneToOne
+    @ManyToOne
     @JsonBackReference(value = "player-game")
     private Game game;
     private int receivedCardCounter;

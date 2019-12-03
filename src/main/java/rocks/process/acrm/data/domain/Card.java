@@ -17,10 +17,10 @@ public class Card {
     private Suit suit;
     private static final int MAX_RANK = 14;
     private static final int MIN_RANK = 2;
-    @OneToOne
+    @ManyToOne
     @JsonBackReference(value = "card-playerAssociatedToHand")
     private Player playerAssociatedToHand;
-    @OneToOne
+    @ManyToOne
     @JsonBackReference(value = "card-playerAssociatedToWon")
     private Player playerAssociatedToWon;
     @ManyToMany
