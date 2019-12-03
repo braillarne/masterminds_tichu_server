@@ -49,7 +49,6 @@ public class Combination {
     @OneToMany(mappedBy = "playableCombinations")
     List<Card> cards;
     @ManyToOne
-    @JsonBackReference(value = "combination-player")
     private Player player;
     CombinationType combinationType;
     int mainRank;

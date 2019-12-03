@@ -19,9 +19,9 @@ public class Player {
     private boolean isHost;
     @ManyToOne
     private Team team;
-    @ManyToMany
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "playerAssociatedToHand")
     private List<Card> hand;
-    @ManyToMany
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "playerAssociatedToWon")
     private List<Card> wonCards;
     @ManyToMany
     private List<Combination> playableCombinations;

@@ -17,11 +17,11 @@ public class Card {
     private Suit suit;
     private static final int MAX_RANK = 14;
     private static final int MIN_RANK = 2;
-    @ManyToOne
-    @JsonBackReference(value = "card-playerAssociatedToHand")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "playerAssociatedToHand_id")
     private Player playerAssociatedToHand;
-    @ManyToOne
-    @JsonBackReference(value = "card-playerAssociatedToWon")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "playerAssociatedToWon_id")
     private Player playerAssociatedToWon;
     @ManyToMany
     @JsonBackReference(value = "card-combination")
@@ -50,16 +50,8 @@ public class Card {
         return MIN_RANK;
     }
 
-    public Player getPlayerAssociatedToHand() {
-        return playerAssociatedToHand;
-    }
-
     public void setPlayerAssociatedToHand(Player player) {
         this.playerAssociatedToHand = player;
-    }
-
-    public Player getPlayerAssociatedToWon() {
-        return playerAssociatedToWon;
     }
 
     public void setPlayerAssociatedToWon(Player player) {
@@ -73,14 +65,6 @@ public class Card {
     public void setPlayableCombinations(List<Combination> playableCombinations) {
         this.playableCombinations = playableCombinations;
     }
-    /*@Override
-    public int compareTo(Card i){
-        if (this.rank == i.rank) return 0;
-        else if (this.rank > i.rank) return 1;
-        else return -1;
-
-    }*/
-
 
     @Override
     public String toString() {

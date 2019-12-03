@@ -44,7 +44,7 @@ public class GameBusinessService {
         List<Card> deck = new ArrayList<>();
 
         //Add Jade
-        for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
+        for (int i = Card.getMIN_RANK(); i <= Card.getMAX_RANK(); i++) {
             Card tempcard = new Card();
             tempcard.setRank(i);
             tempcard.setSuit(Suit.JADE);
@@ -53,7 +53,7 @@ public class GameBusinessService {
         }
 
         //Add Sword
-        for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
+        for (int i = Card.getMIN_RANK(); i <= Card.getMAX_RANK(); i++) {
             Card tempcard = new Card();
             tempcard.setRank(i);
             tempcard.setSuit(Suit.SWORD);
@@ -62,7 +62,7 @@ public class GameBusinessService {
         }
 
         //Add Pagoda
-        for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
+        for (int i = Card.getMIN_RANK(); i <= Card.getMAX_RANK(); i++) {
             Card tempcard = new Card();
             tempcard.setRank(i);
             tempcard.setSuit(Suit.PAGODA);
@@ -72,7 +72,7 @@ public class GameBusinessService {
         }
 
         //Add Star
-        for (int i = Card.getMIN_RANK(); i < Card.getMAX_RANK(); i++) {
+        for (int i = Card.getMIN_RANK(); i <= Card.getMAX_RANK(); i++) {
             Card tempcard = new Card();
             tempcard.setRank(i);
             tempcard.setSuit(Suit.STAR);
@@ -197,7 +197,10 @@ public class GameBusinessService {
             }
 
             game.getPlayers().get(i).addOneCardToHand(deck.get(0));
+            deck.get(0).setPlayerAssociatedToHand(game.getPlayers().get(i));
+            cardRepository.save(deck.get(0));
             playerRepository.save(game.getPlayers().get(i));
+            gameRepository.save(game);
 
             deck.remove(0);
 
@@ -285,23 +288,23 @@ public class GameBusinessService {
 
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
         Player currentLeader = currentGame.getCurrentCombination().getPlayer();
+        Player currentPlayer = playerRepository.findOnePlayerById(gameHandler.getPlayerID());
 
+        currentLeader.setPlaying(true);
+        currentPlayer.setPlaying(false);
 
-        currentLeader.setWonCards(currentGame.getPlayedCards());
+        for (Card c: currentGame.getPlayedCards()) {
+            currentLeader.getWonCards().add(c);
+            c.setPlayerAssociatedToWon(currentLeader);
+            cardRepository.save(c);
+            playerRepository.save(currentLeader);
+        }
 
-        if(currentLeader.getHand().size()==0){
-
-            passToken(gameHandler);
-
-
-        }else currentLeader.givePlayToken();
-
-
-        playerRepository.save(currentLeader);
+        playerRepository.save(currentPlayer);
 
         currentGame.getPlayedCards().clear();
+        currentGame.setCurrentCombination(null);
         gameRepository.save(currentGame);
-
 
     }
 
@@ -634,8 +637,12 @@ public class GameBusinessService {
             currentGame.getPlayedCards().addAll(moveHandler.getCards());
             gameRepository.save(currentGame);
 
-            currentPlayer.getHand().removeAll(moveHandler.getCards());
-            playerRepository.save(currentPlayer);
+            //currentPlayer.getHand().removeAll(moveHandler.getCards());
+            for (Card c:moveHandler.getCards()) {
+                currentPlayer.getHand().remove(c);
+            }
+
+            currentPlayer = playerRepository.save(currentPlayer);
 
             //Check if player of playedCombination is the winner
             isWinner(currentPlayer,currentGame);
