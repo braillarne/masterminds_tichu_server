@@ -16,12 +16,12 @@ public class Game {
     @ManyToMany
     private List<Team> teams;
     private int currentScore;
-    @OneToOne
+    @ManyToOne
     @JsonBackReference(value = "combination-game")
     private Combination currentCombination;
     @ManyToMany
     private List<Card> playedCards;
-    private int maxRound;
+    private Long winnerID;
     private State state;
     private int passCounter;
     private String endOfTheGameMessage;
@@ -74,12 +74,12 @@ public class Game {
         this.players = players;
     }
 
-    public int getMaxRound() {
-        return maxRound;
+    public Long getWinnerID() {
+        return winnerID;
     }
 
-    public void setMaxRound(int maxRound) {
-        this.maxRound = maxRound;
+    public void setWinnerID(Long winnerID) {
+        this.winnerID = winnerID;
     }
 
     public State getState() {
