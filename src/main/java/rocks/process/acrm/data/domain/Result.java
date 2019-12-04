@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
@@ -18,11 +19,11 @@ public class Result {
         this.id = id;
     }
 
-    public Timestamp getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Timestamp date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -34,20 +35,28 @@ public class Result {
         this.score = score;
     }
 
-    public int getRank() {
-        return rank;
+    public boolean getIsWinner() {
+        return isWinner;
     }
 
-    public void setRank(int rank) {
-        this.rank = rank;
+    public void setIsWinner(boolean isWinner) {
+        this.isWinner = isWinner;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 
     @Id
     @GeneratedValue
     private Long id;
-    private Timestamp date;
+    private String date;
     private int score;
-    private int rank;
+    private boolean isWinner;
     @OneToOne
     @JsonBackReference
     private Profile profile;

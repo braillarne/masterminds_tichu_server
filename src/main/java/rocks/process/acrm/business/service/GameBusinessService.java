@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import rocks.process.acrm.data.domain.*;
 import rocks.process.acrm.data.repository.*;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -469,12 +471,26 @@ public class GameBusinessService {
         game.setEndOfTheGameMessage("Team " + winners.getTeamId() + " wons with " + winners.getScore() + "pts.");
         gameToBeReturned = gameRepository.save(game);
 
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        for (Player p:game.getPlayers()) {
+            Result result = new Result();
+            Profile profile = profileRepository.findProfileById(p.getProfileID());
+
+            result.setIsWinner(p.getTeam()==winners);
+            result.setProfile(profile);
+            result.setDate(timestamp.toString());
+
+            profile.getResults().add(result);
+
+            resultRepository.save(result);
+            profileRepository.save(profile);
+        }
+
         gameRepository.delete(game);
 
         return gameToBeReturned;
     }
-
-
 
     @Autowired
     private TeamRepository teamRepository;
