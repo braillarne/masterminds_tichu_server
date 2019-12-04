@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import rocks.process.acrm.data.domain.*;
 import rocks.process.acrm.data.repository.*;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -24,6 +23,15 @@ public class GameBusinessService {
     @Autowired
     private CombinationRepository combinationRepository;
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param cards
+     * @param combinationType
+     * @param mainRank
+     * @param player
+     * @return
+     */
     public Combination createCombination(List<Card> cards, CombinationType combinationType, int mainRank, Player player) {
         Combination tempComb = new Combination();
         tempComb.setCards(cards);
@@ -37,11 +45,13 @@ public class GameBusinessService {
     }
 
     @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
     private DeckRepository deckRepository;
 
+    /**
+     * Author(s): Nelson Braillard, Pascal Schaller
+     *
+     * @return
+     */
     public List<Card> createDeck() {
         List<Card> deck = new ArrayList<>();
 
@@ -91,14 +101,32 @@ public class GameBusinessService {
     @Autowired
     private GameRepository gameRepository;
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param id
+     * @return
+     */
     public Game getGame(Long id) {
         return gameRepository.findByGameId(id);
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param game
+     */
     public void saveGame(Game game) {
         gameRepository.save(game);
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param profileID
+     * @param name
+     * @return
+     */
     public Game createGame(Long profileID, String name) {
         Profile p = profileRepository.findProfileById(profileID);
         Game tempGame = gameRepository.save(new Game());
@@ -112,11 +140,24 @@ public class GameBusinessService {
         return gameRepository.save(tempGame);
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param game
+     * @return
+     */
     public Game initializeGame(Game game){
 
         return initializeRound(setTeamToPlayer(game));
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param profileID
+     * @param gameID
+     * @return
+     */
     public Game joinGame(Long profileID, Long gameID){
         Profile profile = profileRepository.findProfileById(profileID);
         Game game = gameRepository.findByGameId(gameID);
@@ -128,6 +169,13 @@ public class GameBusinessService {
         return gameRepository.save(game);
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param gh
+     * @return
+     * @throws Exception
+     */
     public Game updateGameState(GameHandler gh) throws Exception{
         Game tempGame = gameRepository.findByGameId(gh.getGameID());
         if(gh.getGameState().equals(State.RUNNING)||gh.getGameState().equals(State.CLOSED)){
@@ -155,6 +203,11 @@ public class GameBusinessService {
         return gameRepository.save(tempGame);
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param gameHandler
+     */
     public void unregisterFromGame(GameHandler gameHandler) {
         Game game = gameRepository.findByGameId(gameHandler.getGameID());
         Player player = playerRepository.findOnePlayerById(gameHandler.getPlayerID());
@@ -176,6 +229,12 @@ public class GameBusinessService {
         }
     }
 
+    /**
+     * Author(s): Nelson Braillard, Pascal Schaller
+     *
+     * @param game
+     * @return
+     */
     public Game initializeRound(Game game){
         List<Card> deck = createDeck();
 
@@ -210,12 +269,15 @@ public class GameBusinessService {
 
         }
 
-        //Save everything what was modified
-        //game.getPlayers().forEach(p -> playerRepository.save(p));
-
         return gameRepository.save(game);
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param pushHandler
+     * @return
+     */
     public Player pushCard(PushHandler pushHandler) {
         Card pushedCard = cardRepository.getOne(pushHandler.getCardID());
         Player sender = playerRepository.getOne(pushHandler.getSenderID());
@@ -231,6 +293,11 @@ public class GameBusinessService {
         return playerRepository.save(sender);
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param gameHandler
+     */
     public void pass(GameHandler gameHandler) {
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
 
@@ -247,6 +314,11 @@ public class GameBusinessService {
         }
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param gameHandler
+     */
     public void passToken(GameHandler gameHandler){
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
@@ -268,6 +340,12 @@ public class GameBusinessService {
         }
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param gameHandler
+     * @return
+     */
     public boolean isEndOfTrick(GameHandler gameHandler) {
 
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
@@ -286,6 +364,11 @@ public class GameBusinessService {
 
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param gameHandler
+     */
     public void endOfTrick(GameHandler gameHandler){
 
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
@@ -310,6 +393,12 @@ public class GameBusinessService {
 
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param gameHandler
+     * @return
+     */
     public boolean isEndOfRound(GameHandler gameHandler){
 
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
@@ -349,6 +438,12 @@ public class GameBusinessService {
         return false;
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param gameHandler
+     * @param loosers
+     */
     public void endOfRound(GameHandler gameHandler, ArrayList<Player> loosers){
 
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
@@ -397,15 +492,14 @@ public class GameBusinessService {
             initializeRound(currentGame);
         }
 
-
-
-
-
-
-
-
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param cards
+     * @return
+     */
     public int scoreCards(List<Card> cards){
 
         int score = 0;
@@ -425,6 +519,12 @@ public class GameBusinessService {
 
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param gameHandler
+     * @return
+     */
     public boolean isEndOfGame(GameHandler gameHandler){
         boolean isTheEnd = true;
 
@@ -454,6 +554,12 @@ public class GameBusinessService {
         return isTheEnd;
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param game
+     * @return
+     */
     private Game endOfGame(Game game) {
         Game gameToBeReturned = null;
 
@@ -495,6 +601,12 @@ public class GameBusinessService {
     @Autowired
     private TeamRepository teamRepository;
 
+    /**
+     * Author(s): Nelson Braillard, Pascal Schaller
+     *
+     * @param game
+     * @return
+     */
     public Game setTeamToPlayer(Game game) {
 
         Team team1 = new Team();
@@ -539,10 +651,16 @@ public class GameBusinessService {
     @Autowired
     private ResultRepository resultRepository;
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @return
+     */
     public List<Game> getAllGames() {
         return gameRepository.findAll();
     }
 
+    // TODO Delete
     public boolean verificateStartofGame(Game game) {
 
         if(game.getPlayers().size()==4) return true;
@@ -550,10 +668,24 @@ public class GameBusinessService {
         return false;
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param player
+     */
     public void savePlayer(Player player) {
         playerRepository.save(player);
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param profileID
+     * @param avatarID
+     * @param name
+     * @param game
+     * @return
+     */
     public Player createPlayer(Long profileID, int avatarID, String name, Game game) {
         Player tempPlayer = new Player();
 
@@ -572,6 +704,12 @@ public class GameBusinessService {
         return playerRepository.findByName(name);
     }
 
+    /**
+     * Author(s): Nelson Braillard, Pascal Schaller
+     *
+     * @param moveHandler
+     * @return
+     */
     public Game determineCombination(MoveHandler moveHandler) {
 
         Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
@@ -642,6 +780,12 @@ public class GameBusinessService {
         }
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param moveHandler
+     * @return
+     */
     public Game createCombinationFromCards(MoveHandler moveHandler) {
 
         Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
@@ -689,6 +833,12 @@ public class GameBusinessService {
         return currentGame;
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param potentialWinner
+     * @param currentGame
+     */
     public void isWinner(Player potentialWinner, Game currentGame){
 
         if(potentialWinner.getHand().size()==0&&currentGame.getWinnerID()==null){
@@ -696,14 +846,16 @@ public class GameBusinessService {
             currentGame.setWinnerID(potentialWinner.getId());
             gameRepository.save(currentGame);
 
-
-
         }
-
-
 
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param moveHandler
+     * @return
+     */
     public Boolean isSingle(MoveHandler moveHandler) {
         Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
 
@@ -714,6 +866,12 @@ public class GameBusinessService {
         return false;
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param moveHandler
+     * @return
+     */
     public Boolean isPair(MoveHandler moveHandler) {
 
         if (moveHandler.getCards().size() == 2 && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()) {
@@ -723,6 +881,12 @@ public class GameBusinessService {
         } else return false;
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param moveHandler
+     * @return
+     */
     public boolean isTriple(MoveHandler moveHandler) {
         if (moveHandler.getCards().size() == 3
                 && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()
@@ -733,6 +897,12 @@ public class GameBusinessService {
         } else return false;
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param moveHandler
+     * @return
+     */
     public boolean isRunningPair(MoveHandler moveHandler) {
 
 
@@ -756,6 +926,12 @@ public class GameBusinessService {
         return false;
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param moveHandler
+     * @return
+     */
     public boolean isFullHouse(MoveHandler moveHandler) {
 
 
@@ -783,6 +959,12 @@ public class GameBusinessService {
 
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param moveHandler
+     * @return
+     */
     public boolean isRow(MoveHandler moveHandler) {
 
         int counter = 0;
@@ -806,6 +988,12 @@ public class GameBusinessService {
         return false;
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param cards
+     * @return
+     */
     public int calculateCombinationScore(List<Card> cards) {
 
         //Add together main ranks of all the cards
@@ -818,6 +1006,12 @@ public class GameBusinessService {
         return allranks;
     }
 
+    /**
+     * Author(s): Pascal Schaller
+     *
+     * @param moveHandler
+     * @return
+     */
     public boolean isBomb(MoveHandler moveHandler) {
 
 
