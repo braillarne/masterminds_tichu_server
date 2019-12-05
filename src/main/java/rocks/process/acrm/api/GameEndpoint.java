@@ -30,6 +30,17 @@ public class GameEndpoint {
         return ResponseEntity.ok(game);
     }
 
+    @GetMapping(path = "/game/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Game> getGameByID(@PathVariable(value = "id") String id) {
+        Game game = null;
+        try {
+            game = gameBusinessService.getGame(Long.parseLong(id));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+        return ResponseEntity.ok(game);
+    }
+
     @PostMapping(path = "/game", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Game> postGame(@RequestBody Game game) throws Exception {
         try {
