@@ -491,8 +491,9 @@ public class GameBusinessService {
         }
 
         if(!isEndOfGame(gameHandler)){
-
             initializeRound(currentGame);
+        } else {
+            endOfGame(currentGame);
         }
 
     }
