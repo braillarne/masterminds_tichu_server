@@ -284,10 +284,13 @@ public class GameBusinessService {
         Player receiver = playerRepository.getOne(pushHandler.getReceiverID());
 
         receiver.setReceivedCardCounter(receiver.getReceivedCardCounter()+1);
-        receiver.getHand().add(pushedCard);
 
-        sender.getHand().remove(pushedCard);
+        receiver.addOneCardToHand(pushedCard);
+        sender.removeOneCardFromHand(pushedCard);
 
+        pushedCard.setPlayerAssociatedToHand(receiver);
+
+        cardRepository.save(pushedCard);
         playerRepository.save(receiver);
 
         return playerRepository.save(sender);
