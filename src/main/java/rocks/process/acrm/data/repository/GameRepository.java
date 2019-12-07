@@ -10,6 +10,7 @@ import java.util.List;
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findAll();
+    List<Game> findAllByName(String name);
     List<Game> findAllByState(State state);
     Game findByGameId(Long id);
 }

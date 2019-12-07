@@ -127,17 +127,22 @@ public class GameBusinessService {
      * @param name
      * @return
      */
-    public Game createGame(Long profileID, String name) {
-        Profile p = profileRepository.findProfileById(profileID);
-        Game tempGame = gameRepository.save(new Game());
-        Player tempPlayer = createPlayer(profileID, p.getAvatar(), p.getUsername(), tempGame);
-        playerRepository.save(tempPlayer);
-        List<Player> players = new ArrayList<>();
-        players.add(tempPlayer);
-        tempGame.setPlayers(players);
-        tempGame.setName(name);
-        tempGame.setState(State.OPEN);
-        return gameRepository.save(tempGame);
+    public Game createGame(Long profileID, String name) throws Exception{
+        if(gameRepository.findAllByName(name).size()!=0){
+            throw new Exception("Name already used");
+        } else {
+
+            Profile p = profileRepository.findProfileById(profileID);
+            Game tempGame = gameRepository.save(new Game());
+            Player tempPlayer = createPlayer(profileID, p.getAvatar(), p.getUsername(), tempGame);
+            playerRepository.save(tempPlayer);
+            List<Player> players = new ArrayList<>();
+            players.add(tempPlayer);
+            tempGame.setPlayers(players);
+            tempGame.setName(name);
+            tempGame.setState(State.OPEN);
+            return gameRepository.save(tempGame);
+        }
     }
 
     /**

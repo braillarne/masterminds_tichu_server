@@ -17,11 +17,18 @@ public class ProfileService {
 
     public void saveProfile(Profile profile) throws Exception {
         try {
-            profileRepository.save(profile);
 
             if(profile.isGuest()){
+                profileRepository.save(profile);
                 profile.setUsername("Guest"+profile.getId().toString());
                 profileRepository.save(profile);
+            } else {
+                if(profileRepository.findByUsername(profile.getUsername())!=null) {
+                    throw new Exception("Username not free");
+                } else {
+                    profileRepository.save(profile);
+                }
+
             }
 
         } catch (Exception e){
