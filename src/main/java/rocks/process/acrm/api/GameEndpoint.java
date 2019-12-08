@@ -122,7 +122,7 @@ public class GameEndpoint {
     public Game doMove(@RequestBody MoveHandler moveHandler) {
         Game game = null;
         try {
-            game = gameBusinessService.determineCombination(moveHandler);
+            game = gameBusinessService.doMove(moveHandler);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }
