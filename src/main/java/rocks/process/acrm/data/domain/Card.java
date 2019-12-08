@@ -23,9 +23,9 @@ public class Card {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "playerAssociatedToWon_id")
     private Player playerAssociatedToWon;
-    @ManyToMany
-    @JsonBackReference(value = "card-combination")
-    private List<Combination> playableCombinations;
+    @ManyToOne
+    @JoinColumn(name = "combination_id")
+    private Combination combination;
     @OneToOne
     @JsonBackReference(value = "card-game")
     private Game game;
@@ -58,12 +58,12 @@ public class Card {
         this.playerAssociatedToWon = player;
     }
 
-    public List<Combination> getPlayableCombinations() {
-        return playableCombinations;
+    public Combination getCombination() {
+        return combination;
     }
 
-    public void setPlayableCombinations(List<Combination> playableCombinations) {
-        this.playableCombinations = playableCombinations;
+    public void setCombination(Combination Combination) {
+        this.combination = Combination;
     }
 
     @Override

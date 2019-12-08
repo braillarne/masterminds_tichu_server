@@ -43,14 +43,19 @@ public class Combination {
         this.secondaryRank = secondaryRank;
     }
 
+    public List<Card> getCards() {
+        return cards;
+    }
+
+
     @Id
     @GeneratedValue
     private Long id;
-    @OneToMany(mappedBy = "playableCombinations")
-    List<Card> cards;
     @ManyToOne
     private Player player;
     CombinationType combinationType;
     int mainRank;
     int secondaryRank;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "combination")
+    private List<Card> cards;
 }
