@@ -40,8 +40,9 @@ public class ProfileService {
     public Profile loginWithUsernameAndPassword(String username, String password) throws Exception {
         try {
             Profile profile = findOneProfileByUsername(username);
-
-            if (profile.getPassword().equals(password)) {
+            if(profile.isGuest()){
+                return profile;
+            } else if (profile.getPassword().equals(password)) {
                 return profile;
             } else {
                 throw new Exception("Invalid username or password.");
