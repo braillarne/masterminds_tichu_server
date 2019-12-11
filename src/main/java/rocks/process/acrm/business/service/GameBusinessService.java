@@ -849,6 +849,7 @@ public class GameBusinessService {
                 if (isFullHouse(moveHandler)) {
                     isValid = true;
                 }
+                break;
 
             case "ROW":
                 if (isRow(moveHandler)) {
@@ -905,6 +906,7 @@ public class GameBusinessService {
             //currentPlayer.getHand().removeAll(moveHandler.getCards());
             for (Card c:moveHandler.getCards()) {
                 currentPlayer.getHand().remove(c);
+                c.setPlayerAssociatedToHand(null);
                 cardRepository.save(c);
             }
 
