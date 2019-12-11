@@ -868,6 +868,10 @@ public class GameBusinessService {
             } else {
                 Combination currentCombination = currentGame.getCurrentCombination();
                 tempcomb = createCombination(moveHandler.getCards(), currentCombination.getCombinationType(), allranks, currentPlayer);
+                for (Card c:moveHandler.getCards()) {
+                    c.setCombination(tempcomb);
+                    cardRepository.save(c);
+                }
             }
             combinationRepository.save(tempcomb);
 
