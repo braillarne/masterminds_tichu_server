@@ -342,7 +342,7 @@ public class GameBusinessService {
                 playerRepository.save(currentGame.getPlayers().get(i+1));
                 break;
             }
-            if(i==currentGame.getPlayers().size()&& !currentGame.getPlayers().get(i).getId().equals(gameHandler.getPlayerID())){
+            if(i==currentGame.getPlayers().size()-1&& !currentGame.getPlayers().get(i).getId().equals(gameHandler.getPlayerID())){
                 i=0;
             }
         }
@@ -882,6 +882,7 @@ public class GameBusinessService {
             //currentPlayer.getHand().removeAll(moveHandler.getCards());
             for (Card c:moveHandler.getCards()) {
                 currentPlayer.getHand().remove(c);
+                cardRepository.save(c);
             }
 
             currentPlayer = playerRepository.save(currentPlayer);
