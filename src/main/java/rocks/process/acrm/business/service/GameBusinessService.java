@@ -411,6 +411,7 @@ public class GameBusinessService {
 
         currentGame.getPlayedCards().clear();
         currentGame.setCurrentCombination(null);
+        currentGame.setPassCounter(0);
         gameRepository.save(currentGame);
 
     }
