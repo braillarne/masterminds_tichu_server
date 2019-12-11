@@ -1004,10 +1004,14 @@ public class GameBusinessService {
         moveHandler.getCards().sort(Comparator.comparing(Card::getRank));
 
         if (moveHandler.getCards().size() < 4) return false;
+        if (moveHandler.getCards().size() % 2 != 0) return false;
 
 
         int counter = 0;
         for (int i = 1; i < moveHandler.getCards().size() - 1; i = i + 2) {
+            if(moveHandler.getCards().get(i-1).getRank()!=moveHandler.getCards().get(i).getRank()) {
+                return false;
+            }
             if (moveHandler.getCards().get(i).getRank() + 1 == moveHandler.getCards().get(i + 1).getRank()) {
                 counter++;
             }
