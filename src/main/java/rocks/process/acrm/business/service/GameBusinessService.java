@@ -339,13 +339,13 @@ public class GameBusinessService {
         for(int i = currentIndex; i<currentGame.getPlayers().size();i++) {
 
             if(i==3){
-                if(currentGame.getPlayers().get(0).getHand()!=null && currentGame.getPlayers().get(0).getHand().size()>0){
+                if(currentGame.getPlayers().get(0).getHand()!=null || currentGame.getPlayers().get(0).getHand().size()>0){
                     setRemoveAndSavePlayingToken(currentGame.getPlayers().get(i), currentGame.getPlayers().get(0));
 
                     break;
                 }
             }
-             else if(currentGame.getPlayers().get(i+1).getHand()!=null && currentGame.getPlayers().get(i+1).getHand().size()>0){
+             else if(currentGame.getPlayers().get(i+1).getHand()!=null || currentGame.getPlayers().get(i+1).getHand().size()>0){
                  setRemoveAndSavePlayingToken(currentGame.getPlayers().get(i), currentGame.getPlayers().get(i+1));
 
                 break;
