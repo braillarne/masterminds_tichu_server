@@ -334,7 +334,18 @@ public class GameBusinessService {
         int currentIndex = currentGame.getPlayers().indexOf(currentPlayer);
 
         for(int i = currentIndex; i<currentGame.getPlayers().size();i++) {
-            if(currentGame.getPlayers().get(i+1).getHand()!=null && currentGame.getPlayers().get(i+1).getHand().size()>0){
+
+            if(i==3){
+                if(currentGame.getPlayers().get(0).getHand()!=null && currentGame.getPlayers().get(i+0).getHand().size()>0){
+                    currentGame.getPlayers().get(i).setPlaying(false);
+                    currentGame.getPlayers().get(i+1).setPlaying(true);
+
+                    playerRepository.save(currentGame.getPlayers().get(i));
+                    playerRepository.save(currentGame.getPlayers().get(i+1));
+                    break;
+                }
+            }
+             else if(currentGame.getPlayers().get(i+1).getHand()!=null && currentGame.getPlayers().get(i+1).getHand().size()>0){
                 currentGame.getPlayers().get(i).setPlaying(false);
                 currentGame.getPlayers().get(i+1).setPlaying(true);
 
@@ -342,7 +353,7 @@ public class GameBusinessService {
                 playerRepository.save(currentGame.getPlayers().get(i+1));
                 break;
             }
-            if(i==currentGame.getPlayers().size()-1&& !currentGame.getPlayers().get(i).getId().equals(gameHandler.getPlayerID())){
+            if(i==currentGame.getPlayers().size() || !currentGame.getPlayers().get(i).getId().equals(gameHandler.getPlayerID())){
                 i=0;
             }
         }
