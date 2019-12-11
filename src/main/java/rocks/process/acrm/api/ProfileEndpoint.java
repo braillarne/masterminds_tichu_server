@@ -35,6 +35,18 @@ public class ProfileEndpoint {
         return ResponseEntity.ok(profile);
     }
 
+    @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Profile> login(@RequestBody Profile profile) {
+        try {
+            profile = profileService.loginWithUsernameAndPassword(profile.getUsername(), profile.getPassword());
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+
+        }
+        return ResponseEntity.ok(profile);
+    }
+
     @PostMapping(path = "/profile", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Profile> postProfile(@RequestBody Profile profile) throws Exception {
         try {
