@@ -1,9 +1,11 @@
 package rocks.process.acrm.business.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import rocks.process.acrm.data.domain.Profile;
 import rocks.process.acrm.data.repository.ProfileRepository;
+
 
 /**
  * Author(S): Nelson Braillard
@@ -13,6 +15,8 @@ public class ProfileService {
 
     @Autowired
     private ProfileRepository profileRepository;
+
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12); // Strength set as 12
 
     public Profile findOneProfileByUsername(String username) {
         return profileRepository.findByUsername(username);
@@ -29,6 +33,9 @@ public class ProfileService {
                 if(profileRepository.findByUsername(profile.getUsername())!=null) {
                     throw new Exception("Username not free");
                 } else {
+                    String encodedPassword = encoder.encode(profile.getPassword());
+
+                    profile.setPassword(encodedPassword);
                     profileRepository.save(profile);
                 }
 
@@ -45,8 +52,10 @@ public class ProfileService {
             Profile profile = findOneProfileByUsername(username);
             if(profile.isGuest()){
                 return profile;
-            } else if (profile.getPassword().equals(password)) {
+
+            } else if (encoder.matches(password, profile.getPassword())) {
                 return profile;
+
             } else {
                 throw new Exception("Invalid username or password.");
             }
