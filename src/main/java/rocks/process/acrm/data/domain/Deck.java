@@ -13,8 +13,6 @@ public class Deck {
     @Id
     @GeneratedValue
     private Long deckId;
-    /*@OneToMany(mappedBy = "deck")
-    private List<Card> cards;*/
     @OneToOne
     @JsonBackReference(value = "deck-game")
     private Game game;

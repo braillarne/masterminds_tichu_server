@@ -3,7 +3,6 @@ package rocks.process.acrm.data.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Entity
@@ -13,9 +12,7 @@ public class Player {
     private Long id;
     private Long profileID;
     private int avatarID;
-    //@NotEmpty(message = "Please provide a name.")
     private String name;
-    //@NotEmpty
     private boolean isHost;
     @ManyToOne
     private Team team;

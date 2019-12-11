@@ -1,12 +1,8 @@
 package rocks.process.acrm.data.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import org.hibernate.annotations.ManyToAny;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import java.util.List;
 
 @Entity
 public class Card {
