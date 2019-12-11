@@ -340,26 +340,34 @@ public class GameBusinessService {
 
             if(i==3){
                 if(currentGame.getPlayers().get(0).getHand()!=null && currentGame.getPlayers().get(0).getHand().size()>0){
-                    currentGame.getPlayers().get(i).setPlaying(false);
-                    currentGame.getPlayers().get(0).setPlaying(true);
+                    setRemoveAndSavePlayingToken(currentGame.getPlayers().get(i), currentGame.getPlayers().get(0));
 
-                    playerRepository.save(currentGame.getPlayers().get(i));
-                    playerRepository.save(currentGame.getPlayers().get(0));
                     break;
                 }
             }
              else if(currentGame.getPlayers().get(i+1).getHand()!=null && currentGame.getPlayers().get(i+1).getHand().size()>0){
-                currentGame.getPlayers().get(i).setPlaying(false);
-                currentGame.getPlayers().get(i+1).setPlaying(true);
+                 setRemoveAndSavePlayingToken(currentGame.getPlayers().get(i), currentGame.getPlayers().get(i+1));
 
-                playerRepository.save(currentGame.getPlayers().get(i));
-                playerRepository.save(currentGame.getPlayers().get(i+1));
                 break;
             }
             if(i==currentGame.getPlayers().size() || !currentGame.getPlayers().get(i).getId().equals(gameHandler.getPlayerID())){
                 i=0;
             }
         }
+    }
+
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param previousPlayer
+     * @param newPlayer
+     */
+    private void setRemoveAndSavePlayingToken(Player previousPlayer, Player newPlayer) {
+        previousPlayer.setPlaying(false);
+        newPlayer.setPlaying(true);
+
+        playerRepository.save(previousPlayer);
+        playerRepository.save(newPlayer);
     }
 
     /**
