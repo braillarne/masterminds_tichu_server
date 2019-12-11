@@ -339,7 +339,7 @@ public class GameBusinessService {
         for(int i = currentIndex; i<currentGame.getPlayers().size();i++) {
 
             if(i==3){
-                if(currentGame.getPlayers().get(0).getHand()!=null && currentGame.getPlayers().get(i+0).getHand().size()>0){
+                if(currentGame.getPlayers().get(0).getHand()!=null && currentGame.getPlayers().get(0).getHand().size()>0){
                     currentGame.getPlayers().get(i).setPlaying(false);
                     currentGame.getPlayers().get(0).setPlaying(true);
 
