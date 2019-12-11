@@ -58,10 +58,6 @@ public class Card {
         this.playerAssociatedToWon = player;
     }
 
-    public Combination getCombination() {
-        return combination;
-    }
-
     public void setCombination(Combination Combination) {
         this.combination = Combination;
     }
