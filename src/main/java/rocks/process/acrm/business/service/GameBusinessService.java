@@ -341,10 +341,10 @@ public class GameBusinessService {
             if(i==3){
                 if(currentGame.getPlayers().get(0).getHand()!=null && currentGame.getPlayers().get(i+0).getHand().size()>0){
                     currentGame.getPlayers().get(i).setPlaying(false);
-                    currentGame.getPlayers().get(i+1).setPlaying(true);
+                    currentGame.getPlayers().get(0).setPlaying(true);
 
                     playerRepository.save(currentGame.getPlayers().get(i));
-                    playerRepository.save(currentGame.getPlayers().get(i+1));
+                    playerRepository.save(currentGame.getPlayers().get(0));
                     break;
                 }
             }
