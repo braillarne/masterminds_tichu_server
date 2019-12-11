@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import rocks.process.acrm.data.domain.Player;
 import rocks.process.acrm.data.repository.PlayerRepository;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Service
 public class PlayerService {
 

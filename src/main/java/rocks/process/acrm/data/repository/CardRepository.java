@@ -7,6 +7,9 @@ import rocks.process.acrm.data.domain.Player;
 
 import java.util.List;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findAllByPlayerAssociatedToHand(Player p);

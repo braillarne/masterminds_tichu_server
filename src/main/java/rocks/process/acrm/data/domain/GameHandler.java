@@ -1,5 +1,8 @@
 package rocks.process.acrm.data.domain;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 public class GameHandler {
     public Long getProfileID() {
         return profileID;

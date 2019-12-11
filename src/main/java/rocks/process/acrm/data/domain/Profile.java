@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Entity
 public class Profile {
     public Long getId() {

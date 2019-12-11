@@ -5,6 +5,9 @@ import org.springframework.stereotype.Repository;
 import rocks.process.acrm.data.domain.Profile;
 import rocks.process.acrm.data.domain.Setting;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Repository
 public interface SettingRepository extends JpaRepository<Setting, Long> {
     Setting findSettingByProfile(Profile profile);

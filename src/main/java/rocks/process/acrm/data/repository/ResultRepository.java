@@ -8,6 +8,9 @@ import rocks.process.acrm.data.domain.Result;
 import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Repository
 public interface ResultRepository extends JpaRepository<Result, Long> {
     List<Result> findAll();

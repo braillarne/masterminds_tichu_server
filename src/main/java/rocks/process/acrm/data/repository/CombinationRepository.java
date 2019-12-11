@@ -7,6 +7,9 @@ import rocks.process.acrm.data.domain.Player;
 
 import java.util.List;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Repository
 public interface CombinationRepository extends JpaRepository<Combination, Long> {
     List<Combination> findAllByPlayer(Player p);

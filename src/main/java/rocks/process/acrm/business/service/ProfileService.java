@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import rocks.process.acrm.data.domain.Profile;
 import rocks.process.acrm.data.repository.ProfileRepository;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Service
 public class ProfileService {
 

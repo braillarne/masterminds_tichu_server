@@ -8,6 +8,9 @@ import rocks.process.acrm.data.repository.*;
 import java.sql.Timestamp;
 import java.util.*;
 
+/**
+ * Author(S): Nelson Braillard & Pascal Schaller
+ */
 @Service
 public class GameBusinessService {
 

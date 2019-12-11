@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import rocks.process.acrm.data.domain.Setting;
 import rocks.process.acrm.data.repository.SettingRepository;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Service
 public class SettingService {
 

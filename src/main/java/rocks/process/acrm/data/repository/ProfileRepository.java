@@ -6,6 +6,9 @@ import rocks.process.acrm.data.domain.Profile;
 
 import java.util.List;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
     List<Profile> findAll();

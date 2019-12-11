@@ -3,6 +3,9 @@ package rocks.process.acrm.data.domain;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Entity
 public class Combination {
     public void setCards(List<Card> cards) {

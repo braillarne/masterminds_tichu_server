@@ -7,7 +7,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
- @Entity
+/**
+ * Author(S): Nelson Braillard
+ */
+@Entity
 public class Setting {
     public Long getId() {
         return id;

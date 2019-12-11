@@ -12,6 +12,9 @@ import rocks.process.acrm.data.domain.Game;
 
 import java.util.List;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @RestController
 @RequestMapping(path = "/api")
 public class LobbyEndpoint {

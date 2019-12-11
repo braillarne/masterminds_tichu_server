@@ -2,6 +2,9 @@ package rocks.process.acrm.data.domain;
 
 import java.util.List;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 public class MoveHandler {
     public Long getPlayerID() {
         return playerID;

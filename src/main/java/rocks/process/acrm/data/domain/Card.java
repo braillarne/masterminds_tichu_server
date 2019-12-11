@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Entity
 public class Card {
     @Id

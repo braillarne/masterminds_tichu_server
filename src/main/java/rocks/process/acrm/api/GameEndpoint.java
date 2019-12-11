@@ -12,6 +12,9 @@ import rocks.process.acrm.data.domain.*;
 import javax.validation.ConstraintViolationException;
 import java.net.URI;
 
+/**
+ * Author(s): Nelson Braillard
+ */
 @RestController
 @RequestMapping(path = "/api")
 public class GameEndpoint {

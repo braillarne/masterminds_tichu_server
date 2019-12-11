@@ -11,6 +11,9 @@ import org.springframework.web.server.ResponseStatusException;
 import rocks.process.acrm.business.service.PlayerService;
 import rocks.process.acrm.data.domain.Player;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @RestController
 @RequestMapping(path = "/api")
 public class PlayerEndpoint {

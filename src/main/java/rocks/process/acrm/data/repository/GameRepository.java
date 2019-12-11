@@ -7,6 +7,9 @@ import rocks.process.acrm.data.domain.State;
 
 import java.util.List;
 
+/**
+ * Author(S): Nelson Braillard
+ */
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findAll();
