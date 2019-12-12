@@ -897,6 +897,7 @@ public class GameBusinessService {
                     cardRepository.save(c);
                 }
             }
+            currentPlayer.setCombination(tempcomb);
             combinationRepository.save(tempcomb);
 
             currentGame.setCurrentCombination(tempcomb);

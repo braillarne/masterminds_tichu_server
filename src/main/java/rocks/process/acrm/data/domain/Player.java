@@ -23,8 +23,8 @@ public class Player {
     private List<Card> hand;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "playerAssociatedToWon")
     private List<Card> wonCards;
-    @ManyToMany
-    private List<Combination> playableCombinations;
+    @OneToOne
+    private Combination combination;
     private boolean isPlaying;
     @ManyToOne
     @JsonBackReference(value = "player-game")
@@ -87,12 +87,12 @@ public class Player {
         isHost = host;
     }
 
-    public List<Combination> getPlayableCombinations() {
-        return playableCombinations;
+    public Combination getCombination() {
+        return combination;
     }
 
-    public void setPlayableCombinations(List<Combination> playableCombinations) {
-        this.playableCombinations = playableCombinations;
+    public void setCombination(Combination combination) {
+        this.combination = combination;
     }
 
     public void setId(Long id) {
@@ -156,13 +156,4 @@ public class Player {
         return hand;
     }
 
-    public void evaluatePlayableCombination(List<Card> hand) {
-        List<Combination> playableCombination;
-        // Clear the playable combinations
-        playableCombination = null;
-
-        //TODO evaluation logique
-
-        setPlayableCombinations(playableCombination);
-    }
 }

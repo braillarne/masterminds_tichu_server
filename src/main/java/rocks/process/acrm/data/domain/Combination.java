@@ -52,7 +52,7 @@ public class Combination {
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToOne
+    @OneToOne
     private Player player;
     CombinationType combinationType;
     int mainRank;
