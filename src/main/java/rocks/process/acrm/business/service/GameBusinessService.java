@@ -878,7 +878,7 @@ public class GameBusinessService {
      * @param moveHandler
      * @return
      */
-    public Game createCombinationFromCards(MoveHandler moveHandler) {
+    public Game createCombinationFromCards(MoveHandler moveHandler) throws Exception {
 
         Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(currentPlayer.getGame().getId());
@@ -931,6 +931,9 @@ public class GameBusinessService {
 
             isEndOfTrick(gameHandler);
             isEndOfRound(gameHandler);
+        }
+        else {
+            throw new Exception("The combination must be a higher rank.");
         }
 
         return currentGame;
