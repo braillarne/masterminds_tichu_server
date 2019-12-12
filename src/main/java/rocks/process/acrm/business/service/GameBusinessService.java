@@ -356,6 +356,8 @@ public class GameBusinessService {
             if(i==currentGame.getPlayers().size()-1|| !currentGame.getPlayers().get(i).getId().equals(gameHandler.getPlayerID())){
                 i=-1;
             }
+            currentGame.setPassCounter(currentGame.getPassCounter()+1);
+
         }
     }
 
