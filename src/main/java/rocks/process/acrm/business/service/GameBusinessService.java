@@ -384,7 +384,7 @@ public class GameBusinessService {
 
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
 
-        if (currentGame.getPassCounter() == 3) {
+        if (currentGame.getPassCounter() >= 3) {
 
             return true;
         }
