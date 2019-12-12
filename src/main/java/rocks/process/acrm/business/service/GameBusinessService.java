@@ -405,7 +405,7 @@ public class GameBusinessService {
 
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
         Player currentLeader = currentGame.getCurrentCombination().getPlayer();
-        Player currentPlayer = playerRepository.findOnePlayerById(gameHandler.getPlayerID());
+        Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
 
         currentLeader.setPlaying(true);
         currentPlayer.setPlaying(false);
