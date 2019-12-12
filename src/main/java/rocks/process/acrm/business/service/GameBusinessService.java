@@ -342,15 +342,15 @@ public class GameBusinessService {
                 if(currentGame.getPlayers().get(0).getHand()!=null){
                     if (currentGame.getPlayers().get(0).getHand().size() > 0) {
                         setRemoveAndSavePlayingToken(currentGame.getPlayers().get(i), currentGame.getPlayers().get(0));
+                        break;
                     }
-                    break;
                 }
             }
              else if(currentGame.getPlayers().get(i+1).getHand()!=null){
                  if(currentGame.getPlayers().get(i+1).getHand().size()>0) {
                      setRemoveAndSavePlayingToken(currentGame.getPlayers().get(i), currentGame.getPlayers().get(i + 1));
+                     break;
                  }
-                break;
             }
             if(i==currentGame.getPlayers().size() || !currentGame.getPlayers().get(i).getId().equals(gameHandler.getPlayerID())){
                 i=0;
