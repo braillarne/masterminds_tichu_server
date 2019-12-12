@@ -186,7 +186,7 @@ public class GameBusinessService {
      */
     public Game updateGameState(GameHandler gh) throws Exception{
         Game tempGame = gameRepository.findByGameId(gh.getGameID());
-        if(gh.getGameState().equals(State.RUNNING)||gh.getGameState().equals(State.CLOSED)){
+        if(gh.getGameState().equals(State.RUNNING)){
             try {
                 Player player = playerRepository.findOnePlayerById(gh.getPlayerID());
                 if(player.isHost()){
