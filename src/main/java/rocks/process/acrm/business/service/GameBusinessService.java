@@ -316,12 +316,11 @@ public class GameBusinessService {
             currentPlayer.getGame().setPassCounter(currentPlayer.getGame().getPassCounter() + 1);
 
             gameHandler.setGameID(currentPlayer.getGame().getId());
-            if(!isEndOfTrick(gameHandler)){
+            passToken(gameHandler);
 
-                passToken(gameHandler);
-            } else {
-                passToken(gameHandler);
+            if(isEndOfTrick(gameHandler)){
                 endOfTrick(gameHandler);
+
             }
         }
     }
