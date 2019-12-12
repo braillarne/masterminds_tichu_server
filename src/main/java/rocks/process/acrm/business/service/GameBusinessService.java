@@ -353,7 +353,7 @@ public class GameBusinessService {
                      break;
                  }
             }
-            if(i==currentGame.getPlayers().size() || !currentGame.getPlayers().get(i).getId().equals(gameHandler.getPlayerID())){
+            if(i==currentGame.getPlayers().size()-1|| !currentGame.getPlayers().get(i).getId().equals(gameHandler.getPlayerID())){
                 i=0;
             }
         }
