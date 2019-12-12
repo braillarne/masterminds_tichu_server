@@ -757,6 +757,9 @@ public class GameBusinessService {
 
             if (currentGame.getCurrentCombination() == null) {
                 moveHandler = determineCombinationType(moveHandler);
+                if (moveHandler.getCombinationType() == null) {
+                    throw new Exception("Invalid combination type.");
+                }
                 currentCombination = moveHandler.getCombinationType().toString();
 
             } else {
