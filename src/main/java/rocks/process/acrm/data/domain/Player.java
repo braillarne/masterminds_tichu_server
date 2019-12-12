@@ -24,6 +24,7 @@ public class Player {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "playerAssociatedToWon")
     private List<Card> wonCards;
     @OneToOne
+    @JsonBackReference(value = "player-combination")
     private Combination combination;
     private boolean isPlaying;
     @ManyToOne
