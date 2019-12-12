@@ -320,6 +320,7 @@ public class GameBusinessService {
 
                 passToken(gameHandler);
             } else {
+                passToken(gameHandler);
                 endOfTrick(gameHandler);
             }
         }
@@ -384,11 +385,6 @@ public class GameBusinessService {
 
         if (currentGame.getPassCounter() == 3) {
 
-
-            endOfTrick(gameHandler);
-
-
-
             return true;
         }
 
@@ -409,7 +405,6 @@ public class GameBusinessService {
 
         /*currentLeader.setPlaying(true);
         currentPlayer.setPlaying(false);*/
-        passToken(gameHandler);
 
         for (Card c: currentGame.getPlayedCards()) {
             currentLeader.getWonCards().add(c);
