@@ -744,7 +744,7 @@ public class GameBusinessService {
      * @param moveHandler
      * @return
      */
-    public Game doMove(MoveHandler moveHandler) {
+    public Game doMove(MoveHandler moveHandler) throws Exception{
 
         Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(currentPlayer.getGame().getId());
@@ -770,7 +770,7 @@ public class GameBusinessService {
         if(isValid){
             return createCombinationFromCards(moveHandler);
         } else {
-            return currentGame;
+            throw new Exception("Invalid combination type");
         }
     }
 
