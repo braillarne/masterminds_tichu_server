@@ -91,7 +91,7 @@ public class Profile {
     private int avatar;
     private String password;
     private boolean isGuest;
-    @ManyToMany(mappedBy = "profile")
+    @OneToMany(mappedBy = "profile")
     private List<Result> results;
     @OneToOne
     @JsonBackReference

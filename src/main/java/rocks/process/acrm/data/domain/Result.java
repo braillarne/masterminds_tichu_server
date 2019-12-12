@@ -2,10 +2,7 @@ package rocks.process.acrm.data.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 /**
  * Author(S): Nelson Braillard
@@ -58,7 +55,7 @@ public class Result {
     private String date;
     private int score;
     private boolean isWinner;
-    @OneToOne
+    @ManyToOne
     @JsonBackReference
     private Profile profile;
 }
