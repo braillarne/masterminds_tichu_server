@@ -405,10 +405,11 @@ public class GameBusinessService {
 
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
         Player currentLeader = currentGame.getCurrentCombination().getPlayer();
-        Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
+        //Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
 
-        currentLeader.setPlaying(true);
-        currentPlayer.setPlaying(false);
+        /*currentLeader.setPlaying(true);
+        currentPlayer.setPlaying(false);*/
+        passToken(gameHandler);
 
         for (Card c: currentGame.getPlayedCards()) {
             currentLeader.getWonCards().add(c);
@@ -417,7 +418,7 @@ public class GameBusinessService {
             playerRepository.save(currentLeader);
         }
 
-        playerRepository.save(currentPlayer);
+        //playerRepository.save(currentPlayer);
 
         currentGame.getPlayedCards().clear();
         currentGame.setCurrentCombination(null);
