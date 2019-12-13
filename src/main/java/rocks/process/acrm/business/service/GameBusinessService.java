@@ -340,6 +340,7 @@ public class GameBusinessService {
 
             if(i==3){
                 i=-1;
+
             }
 
             if(currentGame.getPlayers().get(i+1).getHand().size()>0){
