@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import rocks.process.acrm.data.domain.Profile;
 import rocks.process.acrm.data.repository.ProfileRepository;
 
+import java.util.Random;
+
 
 /**
  * Author(S): Nelson Braillard
@@ -28,6 +30,9 @@ public class ProfileService {
             if(profile.isGuest()){
                 profileRepository.save(profile);
                 profile.setUsername("Guest"+profile.getId().toString());
+
+                profile.setAvatar(new Random().nextInt(14));
+
                 profileRepository.save(profile);
             } else {
                 if(profileRepository.findByUsername(profile.getUsername())!=null) {
