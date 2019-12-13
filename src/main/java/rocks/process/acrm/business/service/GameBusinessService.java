@@ -130,8 +130,8 @@ public class GameBusinessService {
      * @param name
      * @return
      */
-    public Game createGame(Long profileID, String name) throws Exception{
-        if(gameRepository.findAllByName(name).size()!=0){
+    public Game createGame(Long profileID, String name) throws Exception {
+        if (gameRepository.findAllByName(name).size() != 0) {
             throw new Exception("Name already used");
         } else {
 
@@ -154,7 +154,7 @@ public class GameBusinessService {
      * @param game
      * @return
      */
-    public Game initializeGame(Game game){
+    public Game initializeGame(Game game) {
 
         return initializeRound(setTeamToPlayer(game));
     }
@@ -166,7 +166,7 @@ public class GameBusinessService {
      * @param gameID
      * @return
      */
-    public Game joinGame(Long profileID, Long gameID){
+    public Game joinGame(Long profileID, Long gameID) {
         Profile profile = profileRepository.findProfileById(profileID);
         Game game = gameRepository.findByGameId(gameID);
         Player tempPlayer = createPlayer(profileID, profile.getAvatar(), profile.getUsername(), game);
@@ -184,28 +184,28 @@ public class GameBusinessService {
      * @return
      * @throws Exception
      */
-    public Game updateGameState(GameHandler gh) throws Exception{
+    public Game updateGameState(GameHandler gh) throws Exception {
         Game tempGame = gameRepository.findByGameId(gh.getGameID());
-        if(gh.getGameState().equals(State.RUNNING)){
+        if (gh.getGameState().equals(State.RUNNING)) {
             try {
                 Player player = playerRepository.findOnePlayerById(gh.getPlayerID());
-                if(player.isHost()){
+                if (player.isHost()) {
                     tempGame.setState(gh.getGameState());
 
-                    if(gh.getGameState().equals(State.RUNNING)) {
+                    if (gh.getGameState().equals(State.RUNNING)) {
                         tempGame = initializeGame(tempGame);
                     }
 
                     return gameRepository.save(tempGame);
-                }else {
+                } else {
                     throw new Exception("Need to be host of the game.");
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
 
 
                 throw new Exception(e.getMessage());
             }
-        }else {
+        } else {
             tempGame.setState(gh.getGameState());
         }
         return gameRepository.save(tempGame);
@@ -220,14 +220,14 @@ public class GameBusinessService {
         Game game = gameRepository.findByGameId(gameHandler.getGameID());
         Player player = playerRepository.findOnePlayerById(gameHandler.getPlayerID());
 
-        if(player.isHost()){
-            if(game.getPlayers().size()>1){
+        if (player.isHost()) {
+            if (game.getPlayers().size() > 1) {
                 Player newHost = game.getPlayers().get(1);
                 newHost.setHost(true);
                 newHost.setPlaying(true);
                 playerRepository.save(newHost);
                 playerRepository.delete(player);
-            }else {
+            } else {
                 playerRepository.delete(player);
                 game.setState(State.CLOSED);
                 gameRepository.save(game);
@@ -243,7 +243,7 @@ public class GameBusinessService {
      * @param game
      * @return
      */
-    public Game initializeRound(Game game){
+    public Game initializeRound(Game game) {
         List<Card> deck = createDeck();
 
         //Clear everything from previous game
@@ -252,7 +252,7 @@ public class GameBusinessService {
         game.getPlayedCards().clear();
         game.setPassCounter(0);
 
-        for(Player p: game.getPlayers()){
+        for (Player p : game.getPlayers()) {
 
             p.getWonCards().clear();
 
@@ -291,7 +291,7 @@ public class GameBusinessService {
         Player sender = playerRepository.getOne(pushHandler.getSenderID());
         Player receiver = playerRepository.getOne(pushHandler.getReceiverID());
 
-        receiver.setReceivedCardCounter(receiver.getReceivedCardCounter()+1);
+        receiver.setReceivedCardCounter(receiver.getReceivedCardCounter() + 1);
 
         receiver.addOneCardToHand(pushedCard);
         sender.removeOneCardFromHand(pushedCard);
@@ -312,13 +312,13 @@ public class GameBusinessService {
     public void pass(GameHandler gameHandler) {
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
 
-        if(currentPlayer.isPlaying()) {
+        if (currentPlayer.isPlaying()) {
             currentPlayer.getGame().setPassCounter(currentPlayer.getGame().getPassCounter() + 1);
 
             gameHandler.setGameID(currentPlayer.getGame().getId());
             passToken(gameHandler);
 
-            if(isEndOfTrick(gameHandler)){
+            if (isEndOfTrick(gameHandler)) {
                 endOfTrick(gameHandler);
 
             }
@@ -330,32 +330,24 @@ public class GameBusinessService {
      *
      * @param gameHandler
      */
-    public void passToken(GameHandler gameHandler){
+    public void passToken(GameHandler gameHandler) {
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
 
         int currentIndex = currentGame.getPlayers().indexOf(currentPlayer);
 
-        for(int i = currentIndex; i<currentGame.getPlayers().size();i++) {
+        for (int i = currentIndex; i < currentGame.getPlayers().size(); i++) {
 
             if(i==3){
-                if(currentGame.getPlayers().get(0).getHand()!=null){
-                    if (currentGame.getPlayers().get(0).getHand().size() > 0) {
-                        setRemoveAndSavePlayingToken(currentPlayer, currentGame.getPlayers().get(0));
-                        break;
-                    }
-                }
-            }
-             else if(currentGame.getPlayers().get(i+1).getHand()!=null){
-                 if(currentGame.getPlayers().get(i+1).getHand().size()>0) {
-                     setRemoveAndSavePlayingToken(currentPlayer, currentGame.getPlayers().get(i + 1));
-                     break;
-                 }
-            }
-            if(i==currentGame.getPlayers().size()-1|| !currentGame.getPlayers().get(i).getId().equals(gameHandler.getPlayerID())){
                 i=-1;
             }
-            currentGame.setPassCounter(currentGame.getPassCounter()+1);
+
+            if(currentGame.getPlayers().get(i+1).getHand().size()>0){
+                setRemoveAndSavePlayingToken(currentPlayer, currentGame.getPlayers().get(i+1));
+                break;
+            } else {
+                currentGame.setPassCounter(currentGame.getPassCounter()+1);
+            }
 
         }
     }
@@ -398,7 +390,7 @@ public class GameBusinessService {
      *
      * @param gameHandler
      */
-    public void endOfTrick(GameHandler gameHandler){
+    public void endOfTrick(GameHandler gameHandler) {
 
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
         Player currentLeader = currentGame.getCurrentCombination().getPlayer();
@@ -407,7 +399,7 @@ public class GameBusinessService {
         /*currentLeader.setPlaying(true);
         currentPlayer.setPlaying(false);*/
 
-        for (Card c: currentGame.getPlayedCards()) {
+        for (Card c : currentGame.getPlayedCards()) {
             currentLeader.getWonCards().add(c);
             c.setPlayerAssociatedToWon(currentLeader);
             cardRepository.save(c);
@@ -429,32 +421,30 @@ public class GameBusinessService {
      * @param gameHandler
      * @return
      */
-    public boolean isEndOfRound(GameHandler gameHandler){
+    public boolean isEndOfRound(GameHandler gameHandler) {
 
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
         ArrayList<Player> loosers = new ArrayList<>();
 
 
+        for (int i = 0; i < currentGame.getPlayers().size(); i++) {
 
-        for(int i = 0;i<currentGame.getPlayers().size();i++){
-
-            if(currentGame.getPlayers().get(i).getHand().size()>0){
+            if (currentGame.getPlayers().get(i).getHand().size() > 0) {
 
                 loosers.add(currentGame.getPlayers().get(i));
 
             }
 
 
-
         }
 
-        if (loosers.size()==1){
+        if (loosers.size() == 1) {
 
-            endOfRound(gameHandler,loosers);
+            endOfRound(gameHandler, loosers);
 
-        } else if (loosers.size()==2&&loosers.get(0).getTeam()==loosers.get(1).getTeam()){
-            loosers.get(0).getTeam().setScore(loosers.get(0).getTeam().getScore()+200);
+        } else if (loosers.size() == 2 && loosers.get(0).getTeam() == loosers.get(1).getTeam()) {
+            loosers.get(0).getTeam().setScore(loosers.get(0).getTeam().getScore() + 200);
             currentPlayer.setPlaying(false);
             currentGame.getCurrentCombination().getPlayer().setPlaying(true);
 
@@ -474,7 +464,7 @@ public class GameBusinessService {
      * @param gameHandler
      * @param loosers
      */
-    public void endOfRound(GameHandler gameHandler, ArrayList<Player> loosers){
+    public void endOfRound(GameHandler gameHandler, ArrayList<Player> loosers) {
 
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
         currentPlayer.setPlaying(false);
@@ -487,7 +477,7 @@ public class GameBusinessService {
 
         //Give won tricks to winner
 
-        for(Card c:looser.getHand()){
+        for (Card c : looser.getHand()) {
 
             winner.getWonCards().add(c);
             playerRepository.save(winner);
@@ -498,10 +488,9 @@ public class GameBusinessService {
         int handscorelooser = scoreCards(looser.getHand());
 
 
+        for (Team t : currentGame.getTeams()) {
 
-        for(Team t:currentGame.getTeams()){
-
-            if (t!=looser.getTeam()){
+            if (t != looser.getTeam()) {
                 t.setScore(handscorelooser);
                 teamRepository.save(t);
             }
@@ -509,7 +498,7 @@ public class GameBusinessService {
 
 
         //Score the round
-        for(Player p:currentGame.getPlayers()){
+        for (Player p : currentGame.getPlayers()) {
 
             int wonScoreFromTrick = scoreCards(p.getWonCards());
             p.getTeam().setScore(wonScoreFromTrick);
@@ -517,7 +506,7 @@ public class GameBusinessService {
 
         }
 
-        if(!isEndOfGame(gameHandler)){
+        if (!isEndOfGame(gameHandler)) {
             initializeRound(currentGame);
         } else {
             endOfGame(currentGame);
@@ -531,16 +520,15 @@ public class GameBusinessService {
      * @param cards
      * @return
      */
-    public int scoreCards(List<Card> cards){
+    public int scoreCards(List<Card> cards) {
 
         int score = 0;
 
-        for(Card c:cards){
+        for (Card c : cards) {
 
-            if(c.getRank()==10||c.getRank()==13)score = score + 10;
+            if (c.getRank() == 10 || c.getRank() == 13) score = score + 10;
 
-            if(c.getRank()==5) score = score +5;
-
+            if (c.getRank() == 5) score = score + 5;
 
 
         }
@@ -556,29 +544,29 @@ public class GameBusinessService {
      * @param gameHandler
      * @return
      */
-    public boolean isEndOfGame(GameHandler gameHandler){
+    public boolean isEndOfGame(GameHandler gameHandler) {
         boolean isTheEnd = true;
 
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
         List<Team> teams = currentGame.getTeams();
         List<Team> teamsWithMoreThan1000pts = new ArrayList<>();
 
-        for (Team t:teams ) {
-            if(t.getScore()>=1000){
+        for (Team t : teams) {
+            if (t.getScore() >= 1000) {
                 teamsWithMoreThan1000pts.add(t);
             }
         }
 
-        for(int i=0; i<teamsWithMoreThan1000pts.size()-1;i++){
-            for(int j=i+1; j<teamsWithMoreThan1000pts.size();j++){
-                if(teamsWithMoreThan1000pts.get(i).getScore()==teamsWithMoreThan1000pts.get(j).getScore()){
-                    isTheEnd=false;
+        for (int i = 0; i < teamsWithMoreThan1000pts.size() - 1; i++) {
+            for (int j = i + 1; j < teamsWithMoreThan1000pts.size(); j++) {
+                if (teamsWithMoreThan1000pts.get(i).getScore() == teamsWithMoreThan1000pts.get(j).getScore()) {
+                    isTheEnd = false;
                     break;
                 }
             }
         }
 
-        if(teamsWithMoreThan1000pts.size()<1){
+        if (teamsWithMoreThan1000pts.size() < 1) {
             isTheEnd = false;
         }
 
@@ -597,8 +585,8 @@ public class GameBusinessService {
         Team winners = null;
         int winningScore = 0;
 
-        for (Team t:game.getTeams()) {
-            if(t.getScore()>winningScore){
+        for (Team t : game.getTeams()) {
+            if (t.getScore() > winningScore) {
                 winningScore = t.getScore();
                 winners = t;
             }
@@ -610,11 +598,11 @@ public class GameBusinessService {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        for (Player p:game.getPlayers()) {
+        for (Player p : game.getPlayers()) {
             Result result = new Result();
             Profile profile = profileRepository.findProfileById(p.getProfileID());
 
-            result.setIsWinner(p.getTeam()==winners);
+            result.setIsWinner(p.getTeam() == winners);
             result.setProfile(profile);
             result.setDate(timestamp.toString());
 
@@ -654,7 +642,9 @@ public class GameBusinessService {
         game.getPlayers().get(2).setTeam(team2);
         game.getPlayers().get(3).setTeam(team1);
 
-        for (Player p : game.getPlayers()) { playerRepository.save(p); }
+        for (Player p : game.getPlayers()) {
+            playerRepository.save(p);
+        }
         gameRepository.save(game);
 
         List<Player> playersToBeAdded = new ArrayList<>();
@@ -672,7 +662,7 @@ public class GameBusinessService {
 
         teamRepository.save(team1);
         teamRepository.save(team2);
-        return  gameRepository.save(game);
+        return gameRepository.save(game);
     }
 
 
@@ -694,7 +684,7 @@ public class GameBusinessService {
     // TODO Delete
     public boolean verificateStartofGame(Game game) {
 
-        if(game.getPlayers().size()==4) return true;
+        if (game.getPlayers().size() == 4) return true;
 
         return false;
     }
@@ -741,7 +731,7 @@ public class GameBusinessService {
      * @param moveHandler
      * @return
      */
-    public Game doMove(MoveHandler moveHandler) throws Exception{
+    public Game doMove(MoveHandler moveHandler) throws Exception {
 
         Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
         Game currentGame = gameRepository.getOne(currentPlayer.getGame().getId());
@@ -750,7 +740,7 @@ public class GameBusinessService {
         boolean isValid = false;
 
         String currentCombination = null;
-        if(currentPlayer.isPlaying()) {
+        if (currentPlayer.isPlaying()) {
 
             if (currentGame.getCurrentCombination() == null) {
                 moveHandler = determineCombinationType(moveHandler);
@@ -767,7 +757,7 @@ public class GameBusinessService {
 
         isValid = validateCombination(currentCombination, moveHandler);
 
-        if(isValid){
+        if (isValid) {
             return createCombinationFromCards(moveHandler);
         } else {
             throw new Exception("Invalid combination type");
@@ -781,11 +771,11 @@ public class GameBusinessService {
      * @return
      */
     private MoveHandler determineCombinationType(MoveHandler moveHandler) {
-        if(isSingle(moveHandler)){
+        if (isSingle(moveHandler)) {
             moveHandler.setCombinationType(CombinationType.SINGLE);
         }
 
-        if (isPair(moveHandler)){
+        if (isPair(moveHandler)) {
             moveHandler.setCombinationType(CombinationType.PAIR);
         }
 
@@ -882,19 +872,19 @@ public class GameBusinessService {
 
         int allranks = calculateCombinationScore(moveHandler.getCards());
 
-        if (currentGame.getCurrentCombination()==null||allranks > currentGame.getCurrentCombination().getMainRank()) {
+        if (currentGame.getCurrentCombination() == null || allranks > currentGame.getCurrentCombination().getMainRank()) {
             Combination tempcomb = null;
 
-            if(currentGame.getCurrentCombination()==null){
+            if (currentGame.getCurrentCombination() == null) {
                 tempcomb = createCombination(moveHandler.getCards(), moveHandler.getCombinationType(), allranks, currentPlayer);
-                for (Card c:moveHandler.getCards()) {
+                for (Card c : moveHandler.getCards()) {
                     c.setCombination(tempcomb);
                     cardRepository.save(c);
                 }
             } else {
                 Combination currentCombination = currentGame.getCurrentCombination();
                 tempcomb = createCombination(moveHandler.getCards(), currentCombination.getCombinationType(), allranks, currentPlayer);
-                for (Card c:moveHandler.getCards()) {
+                for (Card c : moveHandler.getCards()) {
                     c.setCombination(tempcomb);
                     cardRepository.save(c);
                 }
@@ -907,7 +897,7 @@ public class GameBusinessService {
             gameRepository.save(currentGame);
 
             //currentPlayer.getHand().removeAll(moveHandler.getCards());
-            for (Card c:moveHandler.getCards()) {
+            for (Card c : moveHandler.getCards()) {
                 currentPlayer.getHand().remove(c);
                 c.setPlayerAssociatedToHand(null);
                 cardRepository.save(c);
@@ -916,20 +906,21 @@ public class GameBusinessService {
             currentPlayer = playerRepository.save(currentPlayer);
 
             //Check if player of playedCombination is the winner
-            isWinner(currentPlayer,currentGame);
+            isWinner(currentPlayer, currentGame);
 
 
             GameHandler gameHandler = new GameHandler();
             gameHandler.setPlayerID(currentPlayer.getId());
             gameHandler.setGameID(currentGame.getGameId());
+
             passToken(gameHandler);
+
             currentGame.setPassCounter(0);
             gameRepository.save(currentGame);
 
             isEndOfTrick(gameHandler);
             isEndOfRound(gameHandler);
-        }
-        else {
+        } else {
             throw new Exception("The combination must be a higher rank.");
         }
 
@@ -942,9 +933,9 @@ public class GameBusinessService {
      * @param potentialWinner
      * @param currentGame
      */
-    public void isWinner(Player potentialWinner, Game currentGame){
+    public void isWinner(Player potentialWinner, Game currentGame) {
 
-        if(potentialWinner.getHand().size()==0&&currentGame.getWinnerID()==null){
+        if (potentialWinner.getHand().size() == 0 && currentGame.getWinnerID() == null) {
 
             currentGame.setWinnerID(potentialWinner.getId());
             gameRepository.save(currentGame);
@@ -992,8 +983,8 @@ public class GameBusinessService {
      */
     public boolean isTriple(MoveHandler moveHandler) {
         if (moveHandler.getCards().size() == 3
-                && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()
-                && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(2).getRank()) {
+            && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()
+            && moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(2).getRank()) {
 
             return true;
 
@@ -1017,7 +1008,7 @@ public class GameBusinessService {
 
         int counter = 0;
         for (int i = 1; i < moveHandler.getCards().size() - 1; i = i + 2) {
-            if(moveHandler.getCards().get(i-1).getRank()!=moveHandler.getCards().get(i).getRank()) {
+            if (moveHandler.getCards().get(i - 1).getRank() != moveHandler.getCards().get(i).getRank()) {
                 return false;
             }
             if (moveHandler.getCards().get(i).getRank() + 1 == moveHandler.getCards().get(i + 1).getRank()) {
@@ -1047,8 +1038,8 @@ public class GameBusinessService {
 
         //Check xxxyy
         if (moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()
-                && moveHandler.getCards().get(1).getRank() == moveHandler.getCards().get(2).getRank()
-                && moveHandler.getCards().get(3).getRank() == moveHandler.getCards().get(4).getRank()) {
+            && moveHandler.getCards().get(1).getRank() == moveHandler.getCards().get(2).getRank()
+            && moveHandler.getCards().get(3).getRank() == moveHandler.getCards().get(4).getRank()) {
 
             return true;
         }
@@ -1056,8 +1047,8 @@ public class GameBusinessService {
 
         //Check xxyyy
         if (moveHandler.getCards().get(0).getRank() == moveHandler.getCards().get(1).getRank()
-                && moveHandler.getCards().get(2).getRank() == moveHandler.getCards().get(3).getRank()
-                && moveHandler.getCards().get(3).getRank() == moveHandler.getCards().get(4).getRank()) {
+            && moveHandler.getCards().get(2).getRank() == moveHandler.getCards().get(3).getRank()
+            && moveHandler.getCards().get(3).getRank() == moveHandler.getCards().get(4).getRank()) {
 
             return true;
         }
@@ -1141,7 +1132,7 @@ public class GameBusinessService {
         if (moveHandler.getCards().size() >= 5) {
             for (int i = 0; i < moveHandler.getCards().size() - 1; i++) {
                 if (moveHandler.getCards().get(i).getRank() + 1 == moveHandler.getCards().get(i + 1).getRank()
-                        && moveHandler.getCards().get(i).getSuit().equals(moveHandler.getCards().get(i + 1).getSuit())) {
+                    && moveHandler.getCards().get(i).getSuit().equals(moveHandler.getCards().get(i + 1).getSuit())) {
                     counter++;
                 }
             }
