@@ -12,6 +12,7 @@ public class Game {
     @GeneratedValue
     private Long gameId;
     private String name;
+    private int roundcounter;
     @OneToMany(mappedBy = "game")
     private List<Player> players;
     @ManyToMany
@@ -44,6 +45,14 @@ public class Game {
 
     public int getPassCounter() {
         return passCounter;
+    }
+
+    public int getRoundcounter() {
+        return roundcounter;
+    }
+
+    public void setRoundcounter(int roundcounter) {
+        this.roundcounter = roundcounter;
     }
 
     public void setPassCounter(int passCounter) {

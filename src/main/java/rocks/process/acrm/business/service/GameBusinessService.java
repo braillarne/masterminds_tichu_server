@@ -143,6 +143,7 @@ public class GameBusinessService {
             players.add(tempPlayer);
             tempGame.setPlayers(players);
             tempGame.setName(name);
+            tempGame.setRoundcounter(0);
             tempGame.setState(State.OPEN);
             return gameRepository.save(tempGame);
         }
@@ -448,7 +449,9 @@ public class GameBusinessService {
             loosers.get(0).getTeam().setScore(loosers.get(0).getTeam().getScore() + 200);
             currentPlayer.setPlaying(false);
             currentGame.getCurrentCombination().getPlayer().setPlaying(true);
+            currentGame.setRoundcounter(currentGame.getRoundcounter()+1);
 
+            gameRepository.save(currentGame);
             playerRepository.save(currentPlayer);
             playerRepository.save(currentGame.getCurrentCombination().getPlayer());
 
@@ -506,6 +509,9 @@ public class GameBusinessService {
             teamRepository.save(p.getTeam());
 
         }
+
+        currentGame.setRoundcounter(currentGame.getRoundcounter()+1);
+        gameRepository.save(currentGame);
 
         if (!isEndOfGame(gameHandler)) {
             initializeRound(currentGame);
