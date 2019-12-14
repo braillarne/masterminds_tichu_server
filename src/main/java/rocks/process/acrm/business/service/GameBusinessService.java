@@ -480,6 +480,9 @@ public class GameBusinessService {
         winner.setPlaying(true);
         Team looserteam = looser.getTeam();
 
+
+        endOfTrick(gameHandler);
+
         //Give won tricks to winner
 
         for (Card c : looser.getHand()) {
@@ -509,6 +512,8 @@ public class GameBusinessService {
 
             int wonScoreFromTrick = scoreCards(p.getWonCards());
             p.getTeam().setScore(p.getTeam().getScore()+wonScoreFromTrick);
+            p.getHand().clear();
+            playerRepository.save(p);
             teamRepository.save(p.getTeam());
 
         }
