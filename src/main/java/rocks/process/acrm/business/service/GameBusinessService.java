@@ -451,6 +451,7 @@ public class GameBusinessService {
             currentGame.getCurrentCombination().getPlayer().setPlaying(true);
             currentGame.setRoundcounter(currentGame.getRoundcounter()+1);
 
+
             gameRepository.save(currentGame);
             playerRepository.save(currentPlayer);
             playerRepository.save(currentGame.getCurrentCombination().getPlayer());
@@ -492,10 +493,12 @@ public class GameBusinessService {
         int handscorelooser = scoreCards(looser.getHand());
 
 
+
+
         for (Team t : currentGame.getTeams()) {
 
             if (t != looser.getTeam()) {
-                t.setScore(handscorelooser);
+                t.setScore(t.getScore()+handscorelooser);
                 teamRepository.save(t);
             }
         }
@@ -505,7 +508,7 @@ public class GameBusinessService {
         for (Player p : currentGame.getPlayers()) {
 
             int wonScoreFromTrick = scoreCards(p.getWonCards());
-            p.getTeam().setScore(wonScoreFromTrick);
+            p.getTeam().setScore(p.getTeam().getScore()+wonScoreFromTrick);
             teamRepository.save(p.getTeam());
 
         }
@@ -533,9 +536,16 @@ public class GameBusinessService {
 
         for (Card c : cards) {
 
-            if (c.getRank() == 10 || c.getRank() == 13) score = score + 10;
+            if (c.getRank() == 10 || c.getRank() == 13) {
+                score = score + 10;
+            }
 
-            if (c.getRank() == 5) score = score + 5;
+            if (c.getRank() == 5)
+                    {
+                        score = score + 5;
+
+                    }
+
 
 
         }
