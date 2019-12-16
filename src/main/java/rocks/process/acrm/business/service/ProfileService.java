@@ -52,6 +52,16 @@ public class ProfileService {
 
     }
 
+    public Profile updateProfile(Profile profile) throws Exception {
+        Profile updatedProfile = null;
+        try {
+            updatedProfile = profileRepository.save(profile);
+        } catch (Exception e) {
+            throw new Exception("Impossible to update the profile. Please check information again.");
+        }
+        return updatedProfile;
+    }
+
     public Profile loginWithUsernameAndPassword(String username, String password) throws Exception {
         try {
             Profile profile = findOneProfileByUsername(username);

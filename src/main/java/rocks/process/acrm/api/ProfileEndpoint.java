@@ -62,6 +62,16 @@ public class ProfileEndpoint {
         return ResponseEntity.created(location).body(profile);
     }
 
+    @PutMapping(path = "/profile", consumes = "application/json", produces = "application/json")
+    public Profile updateProfile(@RequestBody Profile profile) throws Exception {
+        try {
+            profile = profileService.updateProfile(profile);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
+        }
+        return profile;
+    }
+
     @PostMapping(path = "/profile/newGuest", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Profile> postProfile() throws Exception {
         Profile profile = new Profile();
