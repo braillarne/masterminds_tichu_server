@@ -247,17 +247,35 @@ public class GameBusinessService {
     public Game initializeRound(Game game) {
         List<Card> deck = createDeck();
 
+
+        //Clear won cards and remove playtoken
+        for (Player p : game.getPlayers()) {
+
+            for (Card c:p.getWonCards()) {
+                c.setPlayerAssociatedToWon(null);
+            }
+            p.getWonCards().clear();
+            p.setPlaying(false);
+            playerRepository.save(p);
+
+        }
+
+        //Give playtoken to winner
+        if(game.getWinnerID()!=null) {
+            Player winner = playerRepository.findOnePlayerById(game.getWinnerID());
+            winner.setPlaying(true);
+            playerRepository.save(winner);
+        } else {
+            game.getPlayers().get(0).setPlaying(true);
+        }
+
+
         //Clear everything from previous game
         game.setCurrentCombination(null);
         game.setWinnerID(null);
         game.getPlayedCards().clear();
         game.setPassCounter(0);
 
-        for (Player p : game.getPlayers()) {
-
-            p.getWonCards().clear();
-
-        }
 
         //Distribute cards to different players
         for (int i = 0; ; i++) {
@@ -447,8 +465,6 @@ public class GameBusinessService {
 
         } else if (loosers.size() == 2 && loosers.get(0).getTeam() == loosers.get(1).getTeam()) {
             loosers.get(0).getTeam().setScore(loosers.get(0).getTeam().getScore() + 200);
-            currentPlayer.setPlaying(false);
-            currentGame.getCurrentCombination().getPlayer().setPlaying(true);
             currentGame.setRoundcounter(currentGame.getRoundcounter()+1);
 
 
@@ -456,7 +472,12 @@ public class GameBusinessService {
             playerRepository.save(currentPlayer);
             playerRepository.save(currentGame.getCurrentCombination().getPlayer());
 
-            initializeRound(currentGame);
+            if(!isEndOfGame(gameHandler)){
+                initializeRound(currentGame);
+            } else {
+                endOfGame(currentGame);
+            }
+
         }
 
 
@@ -485,10 +506,16 @@ public class GameBusinessService {
 
         //Give won tricks to winner
 
-        for (Card c : looser.getHand()) {
+        for (Card c : looser.getWonCards()) {
 
             winner.getWonCards().add(c);
+            looser.removeOneCardFromHand(c);
+            c.setPlayerAssociatedToWon(winner);
+            c.setPlayerAssociatedToHand(null);
+
+            cardRepository.save(c);
             playerRepository.save(winner);
+            playerRepository.save(looser);
         }
 
 
@@ -515,7 +542,6 @@ public class GameBusinessService {
             p.getHand().clear();
             playerRepository.save(p);
             teamRepository.save(p.getTeam());
-
         }
 
         currentGame.setRoundcounter(currentGame.getRoundcounter()+1);
@@ -574,7 +600,7 @@ public class GameBusinessService {
         List<Team> teamsWithMoreThan1000pts = new ArrayList<>();
 
         for (Team t : teams) {
-            if (t.getScore() >= 1000) {
+            if (t.getScore() >= 70) {
                 teamsWithMoreThan1000pts.add(t);
             }
         }
@@ -633,6 +659,12 @@ public class GameBusinessService {
             resultRepository.save(result);
             profileRepository.save(profile);
         }
+
+        for (Player p: game.getPlayers()) {
+            p.setGame(null);
+        }
+
+        game.setPlayers(null);
 
         gameRepository.delete(game);
 
@@ -793,6 +825,7 @@ public class GameBusinessService {
      * @return
      */
     private MoveHandler determineCombinationType(MoveHandler moveHandler) {
+
         if (isSingle(moveHandler)) {
             moveHandler.setCombinationType(CombinationType.SINGLE);
         }
@@ -821,6 +854,10 @@ public class GameBusinessService {
             moveHandler.setCombinationType(CombinationType.BOMB);
         }
 
+        if(true==true){
+            moveHandler.setCombinationType(CombinationType.ALL);
+        }
+
         return moveHandler;
     }
 
@@ -835,6 +872,9 @@ public class GameBusinessService {
         boolean isValid = false;
         switch (currentCombination) {
 
+            case "ALL":
+                isValid = true;
+                break;
             case "SINGLE":
                 if (isSingle(moveHandler)) {
                     isValid = true;
@@ -935,9 +975,9 @@ public class GameBusinessService {
             gameHandler.setPlayerID(currentPlayer.getId());
             gameHandler.setGameID(currentGame.getGameId());
 
+            currentGame.setPassCounter(0);
             passToken(gameHandler);
 
-            currentGame.setPassCounter(0);
             gameRepository.save(currentGame);
 
             isEndOfTrick(gameHandler);
