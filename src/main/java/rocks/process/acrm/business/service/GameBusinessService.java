@@ -52,9 +52,6 @@ public class GameBusinessService {
 
     }
 
-    @Autowired
-    private DeckRepository deckRepository;
-
     /**
      * Author(s): Nelson Braillard, Pascal Schaller
      *
