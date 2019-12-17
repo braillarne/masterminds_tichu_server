@@ -89,4 +89,13 @@ public class ProfileEndpoint {
 
         return ResponseEntity.created(location).body(profile);
     }
+
+    @DeleteMapping(path = "/profile/{id}", consumes = "application/json", produces = "application/json")
+    public void deleteProfile(@PathVariable(value = "id") String id) throws Exception {
+        try{
+            profileService.deleteProfile(Long.parseLong(id));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 }

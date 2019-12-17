@@ -79,4 +79,12 @@ public class ProfileService {
             throw new Exception("Invalid username or password.");
         }
     }
+
+    public void deleteProfile(Long id) throws Exception{
+        try {
+            profileRepository.delete(profileRepository.getOne(id));
+        } catch (Exception e) {
+            throw new Exception();
+        }
+    }
 }
