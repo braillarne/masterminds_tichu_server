@@ -15,6 +15,7 @@ import java.util.List;
 public interface ResultRepository extends JpaRepository<Result, Long> {
     List<Result> findAll();
     List<Result> findAllByProfile(Profile p);
+    List<Result> findAllByProfileAndIsWinner(Profile p, boolean b);
     List<Result> findAllByDate(Timestamp time);
     List<Result> findAllByDateAndProfile(Timestamp time, Profile p);
     Result findResultById(Long id);

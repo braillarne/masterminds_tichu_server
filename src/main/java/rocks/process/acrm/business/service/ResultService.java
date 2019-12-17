@@ -28,4 +28,8 @@ public class ResultService {
     public List<Result> getAllByProfile(Long profileID) {
         return resultRepository.findAllByProfile(profileRepository.getOne(profileID));
     }
+
+    public String getRatioByProfile(Long profileID) {
+        return resultRepository.findAllByProfileAndIsWinner(profileRepository.getOne(profileID), true).size() + " / " + resultRepository.findAllByProfile(profileRepository.getOne(profileID)).size();
+    }
 }

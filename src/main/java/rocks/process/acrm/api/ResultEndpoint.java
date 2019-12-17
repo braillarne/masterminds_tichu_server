@@ -35,4 +35,9 @@ public class ResultEndpoint {
         return resultService.getAllByProfile(Long.parseLong(id));
     }
 
+    @GetMapping(path = "/result/ratio/{id}", consumes = "application/json", produces = "application/json")
+    public String getRatioProfileID(@PathVariable(value = "id") String id) {
+        return resultService.getRatioByProfile(Long.parseLong(id));
+    }
+
 }
