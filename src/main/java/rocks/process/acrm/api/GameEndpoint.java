@@ -132,4 +132,16 @@ public class GameEndpoint {
         return game;
     }
 
+    @DeleteMapping(path = "game/{id}", consumes = "application/json", produces = "application/json")
+    public void deleteGame(@PathVariable(value = "id") String id) {
+        Game game = null;
+        try{
+            game = gameBusinessService.getGame(Long.parseLong(id));
+
+            gameBusinessService.deleteGame(game);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
 }

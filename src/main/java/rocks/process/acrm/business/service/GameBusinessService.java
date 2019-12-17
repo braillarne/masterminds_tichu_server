@@ -660,6 +660,10 @@ public class GameBusinessService {
             profileRepository.save(profile);
         }
 
+        return gameToBeReturned;
+    }
+
+    public void deleteGame(Game game) {
         for (Player p: game.getPlayers()) {
             p.setGame(null);
         }
@@ -667,8 +671,6 @@ public class GameBusinessService {
         game.setPlayers(null);
 
         gameRepository.delete(game);
-
-        return gameToBeReturned;
     }
 
     @Autowired
