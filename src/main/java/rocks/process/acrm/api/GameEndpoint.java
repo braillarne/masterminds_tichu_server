@@ -23,25 +23,25 @@ public class GameEndpoint {
     private GameBusinessService gameBusinessService;
 
     @GetMapping(path = "/game", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Game> getGame(@RequestBody GameHandler gameHandler) {
+    public Game getGame(@RequestBody GameHandler gameHandler) {
         Game game = null;
         try {
             game = gameBusinessService.getGame(gameHandler.getGameID());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return ResponseEntity.ok(game);
+        return game;
     }
 
     @GetMapping(path = "/game/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Game> getGameByID(@PathVariable(value = "id") String id) {
+    public Game getGameByID(@PathVariable(value = "id") String id) {
         Game game = null;
         try {
             game = gameBusinessService.getGame(Long.parseLong(id));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return ResponseEntity.ok(game);
+        return game;
     }
 
     @PostMapping(path = "/game", consumes = "application/json", produces = "application/json")

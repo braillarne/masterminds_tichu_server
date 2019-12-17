@@ -19,6 +19,11 @@ public class GameBusinessService {
     @Autowired
     private CardRepository cardRepository;
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param card
+     */
     public void saveCard(Card card) {
         cardRepository.save(card);
     }
@@ -110,8 +115,19 @@ public class GameBusinessService {
      * @param id
      * @return
      */
-    public Game getGame(Long id) {
-        return gameRepository.findByGameId(id);
+    public Game getGame(Long id)throws Exception {
+        Game game = null;
+        try {
+            game = gameRepository.findByGameId(id);
+        } catch (Exception e) {
+            throw new Exception("Game not found");
+        }
+
+        if (game == null) {
+            throw new Exception("Game not found");
+        }
+
+        return game;
     }
 
     /**
@@ -663,6 +679,11 @@ public class GameBusinessService {
         return gameToBeReturned;
     }
 
+    /**
+     * Author(s): Nelson Braillard
+     *
+     * @param game
+     */
     public void deleteGame(Game game) {
         for (Player p: game.getPlayers()) {
             p.setGame(null);
@@ -737,14 +758,6 @@ public class GameBusinessService {
         return gameRepository.findAll();
     }
 
-    // TODO Delete
-    public boolean verificateStartofGame(Game game) {
-
-        if (game.getPlayers().size() == 4) return true;
-
-        return false;
-    }
-
     /**
      * Author(s): Nelson Braillard
      *
@@ -774,11 +787,6 @@ public class GameBusinessService {
         tempPlayer.setPlaying(game.getPlayers() == null);
         tempPlayer.setGame(game);
         return tempPlayer;
-    }
-
-    // TODO: delete method if never used
-    public Player findOnePlayerByName(String name) {
-        return playerRepository.findByName(name);
     }
 
     /**
