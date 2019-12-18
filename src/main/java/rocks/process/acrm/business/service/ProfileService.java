@@ -57,15 +57,21 @@ public class ProfileService {
     }
 
     public Profile updateProfile(Profile profile) throws Exception {
-        Profile oldProfile = profileRepository.getOne(profile.getId());
-        Profile updatedProfile = new Profile();
+        Profile updatedProfile = profileRepository.getOne(profile.getId());
         try {
+            if(profile.getFirstname()!=null){
+                updatedProfile.setFirstname(profile.getFirstname());
+            }
+            if(profile.getLastname()!=null){
+                updatedProfile.setLastname(profile.getLastname());
+            }
+            if(profile.getUsername()!=null){
+                updatedProfile.setUsername(profile.getUsername());
+            }
             if(profile.getPassword()!=null) {
                 updatedProfile.setPassword(encoder.encode(profile.getPassword()));
-            } else {
-                updatedProfile.setPassword(oldProfile.getPassword());
             }
-            updatedProfile = profileRepository.save(profile);
+            updatedProfile = profileRepository.save(updatedProfile);
         } catch (Exception e) {
             throw new Exception("Impossible to update the profile. Please check information again.");
         }
