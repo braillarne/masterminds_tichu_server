@@ -59,6 +59,7 @@ public class ProfileService {
     public Profile updateProfile(Profile profile) throws Exception {
         Profile updatedProfile = null;
         try {
+            profile.setPassword(encoder.encode(profile.getPassword()));
             updatedProfile = profileRepository.save(profile);
         } catch (Exception e) {
             throw new Exception("Impossible to update the profile. Please check information again.");
