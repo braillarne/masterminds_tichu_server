@@ -18,16 +18,6 @@ public class GameBusinessService {
     private PlayerRepository playerRepository;
     @Autowired
     private CardRepository cardRepository;
-
-    /**
-     * Author(s): Nelson Braillard
-     *
-     * @param card
-     */
-    public void saveCard(Card card) {
-        cardRepository.save(card);
-    }
-
     @Autowired
     private CombinationRepository combinationRepository;
 
@@ -427,10 +417,6 @@ public class GameBusinessService {
 
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
         Player currentLeader = currentGame.getCurrentCombination().getPlayer();
-        //Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
-
-        /*currentLeader.setPlaying(true);
-        currentPlayer.setPlaying(false);*/
 
         for (Card c : currentGame.getPlayedCards()) {
             currentLeader.getWonCards().add(c);
@@ -438,8 +424,6 @@ public class GameBusinessService {
             cardRepository.save(c);
             playerRepository.save(currentLeader);
         }
-
-        //playerRepository.save(currentPlayer);
 
         currentGame.getPlayedCards().clear();
         currentGame.setCurrentCombination(null);
@@ -517,8 +501,6 @@ public class GameBusinessService {
 
         endOfTrick(gameHandler);
 
-        //Give won tricks to winner
-
         for (Card c : looser.getWonCards()) {
 
             winner.getWonCards().add(c);
@@ -589,14 +571,9 @@ public class GameBusinessService {
                         score = score + 5;
 
                     }
-
-
-
         }
 
         return score;
-
-
     }
 
     /**
@@ -739,7 +716,6 @@ public class GameBusinessService {
         return gameRepository.save(game);
     }
 
-
     @Autowired
     private ProfileRepository profileRepository;
 
@@ -753,15 +729,6 @@ public class GameBusinessService {
      */
     public List<Game> getAllGames() {
         return gameRepository.findAll();
-    }
-
-    /**
-     * Author(s): Nelson Braillard
-     *
-     * @param player
-     */
-    public void savePlayer(Player player) {
-        playerRepository.save(player);
     }
 
     /**
@@ -965,7 +932,6 @@ public class GameBusinessService {
             currentGame.getPlayedCards().addAll(moveHandler.getCards());
             gameRepository.save(currentGame);
 
-            //currentPlayer.getHand().removeAll(moveHandler.getCards());
             for (Card c : moveHandler.getCards()) {
                 currentPlayer.getHand().remove(c);
                 c.setPlayerAssociatedToHand(null);
@@ -1010,7 +976,6 @@ public class GameBusinessService {
             gameRepository.save(currentGame);
 
         }
-
     }
 
     /**
@@ -1020,7 +985,6 @@ public class GameBusinessService {
      * @return
      */
     public Boolean isSingle(MoveHandler moveHandler) {
-        Player currentPlayer = playerRepository.findOnePlayerById(moveHandler.getPlayerID());
 
         if (moveHandler.getCards().size() == 1) {
             return true;
@@ -1183,7 +1147,6 @@ public class GameBusinessService {
 
 
         int counter = 0;
-
 
         if (moveHandler.getCards().size() == 4) {
             for (int i = 0; i < moveHandler.getCards().size() - 1; i++) {

@@ -8,9 +8,7 @@ import rocks.process.acrm.data.domain.Team;
  * Author(S): Nelson Braillard
  */
 @Repository
-public interface TeamRepository extends JpaRepository<Team, Long> {
-
-}
+public interface TeamRepository extends JpaRepository<Team, Long> { }
 
 
 
