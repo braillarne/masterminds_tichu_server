@@ -45,18 +45,14 @@ public class GameEndpoint {
     }
 
     @PostMapping(path = "/game", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Game> postGame(@RequestBody Game game) throws Exception {
+    public Game postGame(@RequestBody Game game) throws Exception {
         try {
             gameBusinessService.saveGame(game);
         } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
         }
 
-        URI location = ServletUriComponentsBuilder
-            .fromCurrentRequest().path("/{customerId}")
-            .buildAndExpand(game.getId()).toUri();
-
-        return ResponseEntity.created(location).body(game);
+        return game;
     }
 
     @PostMapping(path = "/game/new", consumes = "application/json", produces = "application/json")

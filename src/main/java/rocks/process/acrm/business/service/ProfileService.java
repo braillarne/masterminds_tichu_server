@@ -24,7 +24,7 @@ public class ProfileService {
         return profileRepository.findByUsername(username);
     }
 
-    public void saveProfile(Profile profile) throws Exception {
+    public Profile saveProfile(Profile profile) throws Exception {
         try {
 
             if(profile.isGuest()){
@@ -33,7 +33,7 @@ public class ProfileService {
 
                 profile.setAvatar(new Random().nextInt(14));
 
-                profileRepository.save(profile);
+                return profileRepository.save(profile);
             } else {
                 if(profileRepository.findByUsername(profile.getUsername())!=null) {
                     throw new Exception("Username not free");
@@ -41,7 +41,7 @@ public class ProfileService {
                     String encodedPassword = encoder.encode(profile.getPassword());
 
                     profile.setPassword(encodedPassword);
-                    profileRepository.save(profile);
+                    return profileRepository.save(profile);
                 }
 
             }

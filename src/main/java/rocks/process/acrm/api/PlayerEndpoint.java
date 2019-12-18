@@ -22,24 +22,24 @@ public class PlayerEndpoint {
     private PlayerService playerService;
 
     @GetMapping(path = "/player/{playerName}", produces = "application/json")
-    public ResponseEntity<Player> getPlayer(@PathVariable(value = "playerName") String playerName) {
+    public Player getPlayer(@PathVariable(value = "playerName") String playerName) {
         Player player = null;
         try {
             player = playerService.findOnePlayerByName(playerName);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return ResponseEntity.ok(player);
+        return player;
     }
 
     @GetMapping(path = "/player/id/{playerID}", produces = "application/json")
-    public ResponseEntity<Player> getPlayerByID(@PathVariable(value = "playerID") String playerID) {
+    public Player getPlayerByID(@PathVariable(value = "playerID") String playerID) {
         Player player = null;
         try {
             player = playerService.findOneByID(Long.parseLong(playerID));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return ResponseEntity.ok(player);
+        return player;
     }
 }

@@ -22,7 +22,7 @@ public class ProfileEndpoint {
     private ProfileService profileService;
 
     @GetMapping(path = "/profile/{username}/{password}", produces = "application/json")
-    public ResponseEntity<Profile> getProfile(
+    public Profile getProfile(
         @PathVariable(value = "username") String username,
         @PathVariable(value = "password") String password) {
 
@@ -32,11 +32,11 @@ public class ProfileEndpoint {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return ResponseEntity.ok(profile);
+        return profile;
     }
 
     @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Profile> login(@RequestBody Profile profile) {
+    public Profile login(@RequestBody Profile profile) {
         try {
             profile = profileService.loginWithUsernameAndPassword(profile.getUsername(), profile.getPassword());
 
@@ -44,22 +44,18 @@ public class ProfileEndpoint {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
 
         }
-        return ResponseEntity.ok(profile);
+        return profile;
     }
 
     @PostMapping(path = "/profile", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Profile> postProfile(@RequestBody Profile profile) throws Exception {
+    public Profile postProfile(@RequestBody Profile profile) throws Exception {
         try {
             profileService.saveProfile(profile);
         } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
         }
 
-        URI location = ServletUriComponentsBuilder
-            .fromCurrentRequest().path("/{customerId}")
-            .buildAndExpand(profile.getId()).toUri();
-
-        return ResponseEntity.created(location).body(profile);
+        return profile;
     }
 
     @PutMapping(path = "/profile", consumes = "application/json", produces = "application/json")
@@ -73,21 +69,19 @@ public class ProfileEndpoint {
     }
 
     @PostMapping(path = "/profile/newGuest", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Profile> postProfile() throws Exception {
+    public Profile postProfile() throws Exception {
         Profile profile = new Profile();
+        Profile newProfile = null;
+
         profile.setGuest(true);
 
         try {
-            profileService.saveProfile(profile);
+            newProfile = profileService.saveProfile(profile);
         } catch (ConstraintViolationException e) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getConstraintViolations().iterator().next().getMessage());
         }
 
-        URI location = ServletUriComponentsBuilder
-            .fromCurrentRequest().path("/{customerId}")
-            .buildAndExpand(profile.getId()).toUri();
-
-        return ResponseEntity.created(location).body(profile);
+        return newProfile;
     }
 
     @DeleteMapping(path = "/profile/{id}", consumes = "application/json", produces = "application/json")
