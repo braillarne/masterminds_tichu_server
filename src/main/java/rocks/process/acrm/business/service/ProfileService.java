@@ -58,10 +58,10 @@ public class ProfileService {
 
     public Profile updateProfile(Profile profile) throws Exception {
         Profile oldProfile = profileRepository.getOne(profile.getId());
-        Profile updatedProfile = null;
+        Profile updatedProfile = new Profile();
         try {
             if(profile.getPassword()!=null) {
-                profile.setPassword(encoder.encode(profile.getPassword()));
+                updatedProfile.setPassword(encoder.encode(profile.getPassword()));
             } else {
                 updatedProfile.setPassword(oldProfile.getPassword());
             }
