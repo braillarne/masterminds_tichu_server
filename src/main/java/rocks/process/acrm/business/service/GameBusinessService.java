@@ -735,6 +735,15 @@ public class GameBusinessService {
     /**
      * Author(s): Nelson Braillard
      *
+     * @return
+     */
+    public List<Game> getAllOpenGames() {
+        return gameRepository.findAllByState(State.OPEN);
+    }
+
+    /**
+     * Author(s): Nelson Braillard
+     *
      * @param profileID
      * @param avatarID
      * @param name

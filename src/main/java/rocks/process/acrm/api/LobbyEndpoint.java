@@ -25,4 +25,9 @@ public class LobbyEndpoint {
     public List<Game> getAllGames(){
         return gameBusinessService.getAllGames();
     }
+
+    @GetMapping(path = "/lobby/open", produces = "application/json")
+    public List<Game> getAllOpenGames(){
+        return gameBusinessService.getAllOpenGames();
+    }
 }
