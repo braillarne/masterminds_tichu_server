@@ -9,6 +9,3 @@ import rocks.process.acrm.data.domain.Team;
  */
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Long> { }
-
-
-

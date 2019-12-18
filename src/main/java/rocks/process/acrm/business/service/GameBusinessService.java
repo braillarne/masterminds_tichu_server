@@ -590,6 +590,7 @@ public class GameBusinessService {
         List<Team> teamsWithMoreThan1000pts = new ArrayList<>();
 
         for (Team t : teams) {
+            // TODO update final score
             if (t.getScore() >= 70) {
                 teamsWithMoreThan1000pts.add(t);
             }
@@ -828,6 +829,7 @@ public class GameBusinessService {
             moveHandler.setCombinationType(CombinationType.BOMB);
         }
 
+        // TODO REMOVE BEFORE SUBMISSION
         if(true==true){
             moveHandler.setCombinationType(CombinationType.ALL);
         }
@@ -846,6 +848,7 @@ public class GameBusinessService {
         boolean isValid = false;
         switch (currentCombination) {
 
+            // TODO REMOVE BEFORE SUBMISSION
             case "ALL":
                 isValid = true;
                 break;
