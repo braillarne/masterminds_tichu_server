@@ -33,6 +33,8 @@ public class ProfileService {
 
                 profile.setAvatar(new Random().nextInt(14));
 
+                profile.setSetting("DEFAULT");
+
                 return profileRepository.save(profile);
             } else {
                 if(profileRepository.findByUsername(profile.getUsername())!=null) {
@@ -41,6 +43,8 @@ public class ProfileService {
                     String encodedPassword = encoder.encode(profile.getPassword());
 
                     profile.setPassword(encodedPassword);
+                    profile.setSetting("DEFAULT");
+
                     return profileRepository.save(profile);
                 }
 

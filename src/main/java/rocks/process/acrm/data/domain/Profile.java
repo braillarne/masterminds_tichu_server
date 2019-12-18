@@ -74,11 +74,11 @@ public class Profile {
         this.results = results;
     }
 
-    public Setting getSetting() {
+    public String getSetting() {
         return setting;
     }
 
-    public void setSetting(Setting setting) {
+    public void setSetting(String setting) {
         this.setting = setting;
     }
 
@@ -93,7 +93,5 @@ public class Profile {
     private boolean isGuest;
     @OneToMany(mappedBy = "profile")
     private List<Result> results;
-    @OneToOne
-    @JsonBackReference
-    private Setting setting;
+    private String setting;
 }
