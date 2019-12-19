@@ -273,12 +273,11 @@ public class GameBusinessService {
         }
 
 
-        //Clear everything from previous game
+        //Clear everything from previous round
         game.setCurrentCombination(null);
         game.setWinnerID(null);
         game.getPlayedCards().clear();
         game.setPassCounter(0);
-
 
         //Distribute cards to different players
         for (int i = 0; ; i++) {
@@ -464,6 +463,14 @@ public class GameBusinessService {
             loosers.get(0).getTeam().setScore(loosers.get(0).getTeam().getScore() + 200);
             currentGame.setRoundcounter(currentGame.getRoundcounter()+1);
 
+            for(Player p : loosers) {
+                for(Card c : p.getHand()){
+                    c.setPlayerAssociatedToHand(null);
+                    cardRepository.save(c);
+                }
+                p.getHand().clear();
+                playerRepository.save(p);
+            }
 
             gameRepository.save(currentGame);
             playerRepository.save(currentPlayer);
@@ -487,7 +494,7 @@ public class GameBusinessService {
      * @param gameHandler
      * @param loosers
      */
-    public void endOfRound(GameHandler gameHandler, ArrayList<Player> loosers) {
+    public void endOfRound(GameHandler gameHandler, List<Player> loosers) {
 
         Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
         currentPlayer.setPlaying(false);
@@ -504,14 +511,14 @@ public class GameBusinessService {
         for (Card c : looser.getWonCards()) {
 
             winner.getWonCards().add(c);
-            looser.removeOneCardFromHand(c);
+            looser.getWonCards().remove(c);
             c.setPlayerAssociatedToWon(winner);
-            c.setPlayerAssociatedToHand(null);
 
             cardRepository.save(c);
             playerRepository.save(winner);
             playerRepository.save(looser);
         }
+
 
 
         //Give won score from hand to opponent team
@@ -534,6 +541,12 @@ public class GameBusinessService {
 
             int wonScoreFromTrick = scoreCards(p.getWonCards());
             p.getTeam().setScore(p.getTeam().getScore()+wonScoreFromTrick);
+
+            for (Card c : p.getHand()) {
+                c.setPlayerAssociatedToHand(null);
+                cardRepository.save(c);
+            }
+
             p.getHand().clear();
             playerRepository.save(p);
             teamRepository.save(p.getTeam());
@@ -591,7 +604,7 @@ public class GameBusinessService {
 
         for (Team t : teams) {
             // TODO update final score
-            if (t.getScore() >= 70) {
+            if (t.getScore() >= 100) {
                 teamsWithMoreThan1000pts.add(t);
             }
         }
