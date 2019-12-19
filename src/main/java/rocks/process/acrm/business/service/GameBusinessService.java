@@ -515,9 +515,9 @@ public class GameBusinessService {
             c.setPlayerAssociatedToWon(winner);
 
             cardRepository.save(c);
-            playerRepository.save(winner);
-            playerRepository.save(looser);
         }
+        playerRepository.save(winner);
+        playerRepository.save(looser);
 
 
 
@@ -604,7 +604,7 @@ public class GameBusinessService {
 
         for (Team t : teams) {
             // TODO update final score
-            if (t.getScore() >= 100) {
+            if (t.getScore() >= 1000) {
                 teamsWithMoreThan1000pts.add(t);
             }
         }
@@ -852,9 +852,9 @@ public class GameBusinessService {
         }
 
         // TODO REMOVE BEFORE SUBMISSION
-        if(true==true){
+        /*if(true==true){
             moveHandler.setCombinationType(CombinationType.ALL);
-        }
+        }*/
 
         return moveHandler;
     }
@@ -871,9 +871,9 @@ public class GameBusinessService {
         switch (currentCombination) {
 
             // TODO REMOVE BEFORE SUBMISSION
-            case "ALL":
+            /*case "ALL":
                 isValid = true;
-                break;
+                break;*/
             case "SINGLE":
                 if (isSingle(moveHandler)) {
                     isValid = true;

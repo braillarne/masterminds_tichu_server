@@ -72,6 +72,9 @@ public class ProfileService {
             if(profile.getUsername()!=null){
                 updatedProfile.setUsername(profile.getUsername());
             }
+            if(profile.getSetting()!=null){
+                updatedProfile.setSetting(profile.getSetting());
+            }
             if(profile.getPassword()!=null) {
                 updatedProfile.setPassword(encoder.encode(profile.getPassword()));
             }
