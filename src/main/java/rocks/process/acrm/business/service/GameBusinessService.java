@@ -256,12 +256,19 @@ public class GameBusinessService {
 
             for (Card c:p.getWonCards()) {
                 c.setPlayerAssociatedToWon(null);
+                cardRepository.save(c);
+            }
+            for(Card c : p.getHand()) {
+                c.setPlayerAssociatedToHand(null);
+                cardRepository.save(c);
             }
             p.getWonCards().clear();
+            p.getHand().clear();
             p.setPlaying(false);
             playerRepository.save(p);
 
         }
+        gameRepository.save(game);
 
         //Give playtoken to winner
         if(game.getWinnerID()!=null) {
@@ -460,7 +467,12 @@ public class GameBusinessService {
             endOfRound(gameHandler, loosers);
 
         } else if (loosers.size() == 2 && loosers.get(0).getTeam() == loosers.get(1).getTeam()) {
-            loosers.get(0).getTeam().setScore(loosers.get(0).getTeam().getScore() + 200);
+            for (Team t : currentGame.getTeams()){
+                if(t!=loosers.get(0).getTeam()) {
+                    t.setScore(t.getScore()+200);
+                    teamRepository.save(t);
+                }
+            }
             currentGame.setRoundcounter(currentGame.getRoundcounter()+1);
 
             for(Player p : loosers) {
@@ -494,16 +506,12 @@ public class GameBusinessService {
      * @param gameHandler
      * @param loosers
      */
-    public void endOfRound(GameHandler gameHandler, List<Player> loosers) {
+    public void endOfRound(GameHandler gameHandler, ArrayList<Player> loosers) {
 
-        Player currentPlayer = playerRepository.getOne(gameHandler.getPlayerID());
-        currentPlayer.setPlaying(false);
-        playerRepository.save(currentPlayer);
         Game currentGame = gameRepository.getOne(gameHandler.getGameID());
         Player looser = loosers.get(0);
         Player winner = playerRepository.findOnePlayerById(currentGame.getWinnerID());
         winner.setPlaying(true);
-        Team looserteam = looser.getTeam();
 
 
         endOfTrick(gameHandler);
@@ -511,15 +519,23 @@ public class GameBusinessService {
         for (Card c : looser.getWonCards()) {
 
             winner.getWonCards().add(c);
-            looser.getWonCards().remove(c);
             c.setPlayerAssociatedToWon(winner);
 
             cardRepository.save(c);
         }
+        for (Card c : looser.getHand()) {
+
+            winner.getWonCards().add(c);
+            c.setPlayerAssociatedToWon(winner);
+            c.setPlayerAssociatedToHand(null);
+
+            cardRepository.save(c);
+        }
+        looser.getWonCards().clear();;
+        looser.getHand().clear();
+
         playerRepository.save(winner);
         playerRepository.save(looser);
-
-
 
         //Give won score from hand to opponent team
         int handscorelooser = scoreCards(looser.getHand());
@@ -535,17 +551,11 @@ public class GameBusinessService {
             }
         }
 
-
         //Score the round
         for (Player p : currentGame.getPlayers()) {
 
             int wonScoreFromTrick = scoreCards(p.getWonCards());
             p.getTeam().setScore(p.getTeam().getScore()+wonScoreFromTrick);
-
-            for (Card c : p.getHand()) {
-                c.setPlayerAssociatedToHand(null);
-                cardRepository.save(c);
-            }
 
             p.getHand().clear();
             playerRepository.save(p);
@@ -978,7 +988,6 @@ public class GameBusinessService {
 
             gameRepository.save(currentGame);
 
-            isEndOfTrick(gameHandler);
             isEndOfRound(gameHandler);
         } else {
             throw new Exception("The combination must be a higher rank.");
