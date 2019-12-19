@@ -24,6 +24,10 @@ public class ProfileService {
         return profileRepository.findByUsername(username);
     }
 
+    public Profile getOne(Long id) {
+        return profileRepository.findProfileById(id);
+    }
+
     public Profile saveProfile(Profile profile) throws Exception {
         try {
 

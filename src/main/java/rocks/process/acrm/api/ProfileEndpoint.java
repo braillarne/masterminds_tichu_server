@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import rocks.process.acrm.business.service.ProfileService;
+import rocks.process.acrm.data.domain.Game;
 import rocks.process.acrm.data.domain.Profile;
 
 import javax.validation.ConstraintViolationException;
@@ -17,6 +18,17 @@ import javax.validation.ConstraintViolationException;
 public class ProfileEndpoint {
     @Autowired
     private ProfileService profileService;
+
+    @GetMapping(path = "/profile/{id}", consumes = "application/json", produces = "application/json")
+    public Profile getOne(@PathVariable(value = "id") String id) {
+        Profile profile = null;
+        try {
+            profile = profileService.getOne(Long.parseLong(id));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+        return profile;
+    }
 
     @GetMapping(path = "/profile/{username}/{password}", produces = "application/json")
     public Profile getProfile(
