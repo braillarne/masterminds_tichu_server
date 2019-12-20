@@ -3,13 +3,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>rocks.process.acrm</groupId>
-    <artifactId>digipr-acrm-api</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <groupId>masterminds.tichu.server</groupId>
+    <artifactId>masterminds-tichu-server</artifactId>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>digipr-acrm-api</name>
-    <description>Demo project for Spring Boot</description>
+    <name>masterminds-tichu-server</name>
+    <description>Tichu game developed by the Masterminds team</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
